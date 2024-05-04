@@ -19,8 +19,8 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController(text: 'nguyen.manh');
+  final TextEditingController _passwordController = TextEditingController(text: 'nguyen.manh');
   ApiServices auth = ApiServices();
 
   @override
