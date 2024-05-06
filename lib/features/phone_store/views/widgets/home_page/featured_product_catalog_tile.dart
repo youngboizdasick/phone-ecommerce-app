@@ -4,8 +4,8 @@ import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';
 import '../../screens/product_detail/product_detail_page.dart';
-import '../format_price.dart';
-import '../header_text.dart';
+import '../text_format/format_price.dart';
+import '../text_format/header_text.dart';
 import '../rating.dart';
 
 class FeaturedProductCatalogWidget extends StatelessWidget {

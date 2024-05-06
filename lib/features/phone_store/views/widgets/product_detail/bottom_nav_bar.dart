@@ -2,7 +2,7 @@ import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
-import '../format_price.dart';
+import '../text_format/format_price.dart';
 
 class BottomNavBarProductDetailWidget extends StatelessWidget {
   final int price;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../../config/themes/app_pallete.dart';
+import '../../../../../../config/themes/app_pallete.dart';
 
 class FormatPrice extends StatelessWidget {
   final int price;

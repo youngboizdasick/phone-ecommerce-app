@@ -1,12 +1,11 @@
-import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar_custom.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';
 import '../../../models/store.dart';
-import '../../widgets/app_bar_icon.dart';
-import '../../widgets/default_text.dart';
-import '../../widgets/header_text.dart';
+import '../../widgets/text_format/default_text.dart';
+import '../../widgets/text_format/header_text.dart';
 import '../../widgets/product_filter_list_view.dart';
 import '../../widgets/product_tile.dart';
 
@@ -23,32 +22,8 @@ class ProductCatalogPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppPallete.background,
-      appBar: _buildAppBar(context),
+      appBar: AppBarCustom(title: HeaderTextWidget(text: titleCatalog)),
       body: _buildBody(context),
-    );
-  }
-
-  _buildAppBar(BuildContext context) {
-    return AppBar(
-      leading: IconButtonWidget(
-        icon: BootstrapIcons.chevron_left,
-        onPressed: () => Navigator.pop(context),
-      ),
-      title: HeaderTextWidget(text: titleCatalog),
-      actions: [
-        IconButtonWidget(
-          icon: BootstrapIcons.bag,
-          onPressed: () => Navigator.pushNamed(context, '/cartPage'),
-        ),
-      ],
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1),
-        child: Container(
-          height: 1,
-          width: MediaQuery.of(context).size.width,
-          color: AppPallete.background,
-        ),
-      ),
     );
   }
 

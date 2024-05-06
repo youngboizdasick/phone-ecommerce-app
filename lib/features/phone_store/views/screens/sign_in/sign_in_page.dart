@@ -2,13 +2,13 @@ import "package:flutter/material.dart";
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:phone_store_clean_architectutre/features/phone_store/blocs/login/login_bloc.dart";
-import "package:phone_store_clean_architectutre/features/phone_store/data_sources/api_services.dart";
+import "package:phone_store_clean_architectutre/features/phone_store/services/api_services.dart";
 import "package:phone_store_clean_architectutre/features/phone_store/views/widgets/bottom_nav_bar/bottom_tab_bar.dart";
-import "package:phone_store_clean_architectutre/features/phone_store/views/widgets/default_text.dart";
+import "package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/default_text.dart";
 import "../../../../../../config/themes/app_pallete.dart";
 import "../../../../../core/constants/constants.dart";
-import "../../widgets/auth_btn.dart";
-import "../../widgets/input_text_field.dart";
+import "../../widgets/signin_signup/auth_btn.dart";
+import "../../widgets/signin_signup/input_text_field.dart";
 
 class SignInPage extends StatefulWidget {
   final void Function()? onTap;
@@ -19,8 +19,8 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final TextEditingController _usernameController = TextEditingController(text: 'nguyen.manh');
-  final TextEditingController _passwordController = TextEditingController(text: 'nguyen.manh');
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   ApiServices auth = ApiServices();
 
   @override
@@ -108,6 +108,7 @@ class _SignInPageState extends State<SignInPage> {
             controller: _passwordController,
             hintText: 'Mật khẩu',
             isObscureText: true,
+            textInputAction: TextInputAction.done,
           ),
           const SizedBox(height: elementSpacing),
           // sign in button

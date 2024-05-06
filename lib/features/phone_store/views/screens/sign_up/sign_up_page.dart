@@ -2,8 +2,8 @@ import "package:bootstrap_icons/bootstrap_icons.dart";
 import "package:flutter/material.dart";
 import "../../../../../../config/themes/app_pallete.dart";
 import "../../../../../core/constants/constants.dart";
-import "../../widgets/auth_btn.dart";
-import "../../widgets/input_text_field.dart";
+import "../../widgets/signin_signup/auth_btn.dart";
+import "../../widgets/signin_signup/input_text_field.dart";
 
 class SignUpPage extends StatefulWidget {
   final void Function()? onTap;
@@ -88,6 +88,7 @@ class _SignUpPageState extends State<SignUpPage> {
             controller: _confirmPasswordController,
             hintText: 'Xác nhận mật khẩu',
             isObscureText: true,
+            textInputAction: TextInputAction.done,
           ),
           const SizedBox(height: elementSpacing),
           // sign up button

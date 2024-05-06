@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:phone_store_clean_architectutre/config/themes/app_pallete.dart";
 
-import "../../../../core/constants/constants.dart";
+import "../../../../../core/constants/constants.dart";
 
 class AuthButtonWidget extends StatelessWidget {
   final Function()? onAccountBtnPressed;

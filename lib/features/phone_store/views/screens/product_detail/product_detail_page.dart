@@ -1,12 +1,11 @@
-import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar_custom.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';
-import '../../widgets/app_bar_icon.dart';
-import '../../widgets/default_text.dart';
-import '../../widgets/header_text.dart';
+import '../../widgets/text_format/default_text.dart';
+import '../../widgets/text_format/header_text.dart';
 import '../../widgets/product_detail/bottom_nav_bar.dart';
 import '../../widgets/product_detail/color_tile.dart';
 import '../../widgets/product_detail/image_slider/image_slide_tile.dart';
@@ -39,29 +38,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       child: Scaffold(
         backgroundColor: AppPallete.whiteColor,
         extendBodyBehindAppBar: true,
-        appBar: _buildAppBar(),
+        appBar: const BackButtonAndCartButton(),
         body: _buildBody(),
         bottomNavigationBar: BottomNavBarProductDetailWidget(price: price),
       ),
-    );
-  }
-
-  _buildAppBar() {
-    return AppBar(
-      forceMaterialTransparency: true,
-      leading: IconButtonWidget(
-        icon: BootstrapIcons.chevron_left,
-        onPressed: () => Navigator.pop(context),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: elementSpacing),
-          child: IconButtonWidget(
-            icon: BootstrapIcons.bag,
-            onPressed: () => Navigator.pushNamed(context, '/cartPage'),
-          ),
-        ),
-      ],
     );
   }
 

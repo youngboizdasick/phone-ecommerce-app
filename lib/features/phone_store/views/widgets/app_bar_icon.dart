@@ -4,12 +4,12 @@ import '../../../../../config/themes/app_pallete.dart';
 import '../../../../core/constants/constants.dart';
 
 class IconButtonWidget extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
   final void Function()? onPressed;
   const IconButtonWidget({
     super.key,
-    required this.icon,
-    required this.onPressed,
+    this.icon,
+    this.onPressed,
   });
 
   @override

@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:curl_logger_dio_interceptor/curl_logger_dio_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/data_sources/api_urls.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/services/api_urls.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+
+import '../models/product_intro.dart';
 
 class ApiServices {
   final Dio api = Dio();
@@ -73,9 +75,7 @@ class ApiServices {
   Future<void> storeTokens(Map<String, dynamic> data) async {
     // Lưu trữ access token
     await _storage.write(
-      key: 'accessToken',
-      value: data['data']['accessToken']
-    );
+        key: 'accessToken', value: data['data']['accessToken']);
 
     // Lưu trữ refresh token
     await _storage.write(
@@ -85,10 +85,12 @@ class ApiServices {
   }
 
   Future<String?> getAccessToken() async {
+    print(await _storage.read(key: 'accessToken'));
     return await _storage.read(key: 'accessToken');
   }
 
   Future<String?> getRefreshToken() async {
+    print(await _storage.read(key: 'refreshToken'));
     return await _storage.read(key: 'refreshToken');
   }
 
@@ -109,18 +111,30 @@ class ApiServices {
     return false;
   }
 
-  _returnResponse(dynamic response) {
-  switch (response.statusCode) {
-    case 200:
-      var responseJson = jsonDecode(response.data.toString());
-      return responseJson;
-
-    case 400:
-      var responseError = jsonDecode(response.data.toString());
-      return responseError["error"];
-
-    default:
-      return Exception('Default Error ${response.statusCode.toString()}');
+  Future<ProductIntroModel?> fetchProductDetail(String uuid) async {
+    try {
+      final response = await api.get(ApiUrls().API_DETAIL_PRODUCT + uuid);
+      if (response.statusCode == 200) {
+        return ProductIntroModel.fromJson(response.data);
+      }
+    } catch (e) {
+      print(e);
+    }
+    return null;
   }
-}
+
+  _returnResponse(dynamic response) {
+    switch (response.statusCode) {
+      case 200:
+        var responseJson = jsonDecode(response.data.toString());
+        return responseJson;
+
+      case 400:
+        var responseError = jsonDecode(response.data.toString());
+        return responseError["error"];
+
+      default:
+        return Exception('Default Error ${response.statusCode.toString()}');
+    }
+  }
 }

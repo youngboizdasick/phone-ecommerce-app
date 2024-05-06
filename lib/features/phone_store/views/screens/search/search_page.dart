@@ -10,14 +10,14 @@ import '../../widgets/text_format/header_text.dart';
 import '../../widgets/home_page/product_catalog_tile.dart';
 import '../../widgets/search_bar.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class SearchPage extends StatelessWidget {
+  const SearchPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppPallete.background,
-      appBar: SearchBarAndCart(title: SearchBarWidget()),
+      appBar: AppBarCustom(title: SearchBarWidget()),
       body: _buildBody(context),
     );
   }

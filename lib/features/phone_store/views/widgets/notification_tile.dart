@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'default_text.dart';
+import 'text_format/default_text.dart';
 
 class NotificationWidget extends StatelessWidget {
   const NotificationWidget({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
-import '../../widgets/header_text.dart';
+import '../../widgets/text_format/header_text.dart';
 import '../../widgets/notification_tile.dart';
 
 class NotificationPage extends StatelessWidget {

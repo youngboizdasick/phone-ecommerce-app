@@ -4,8 +4,8 @@ import '../../../../../config/themes/app_pallete.dart';
 import '../../../../core/constants/constants.dart';
 import '../../models/smartphone.dart';
 import '../screens/product_detail/product_detail_page.dart';
-import 'default_text.dart';
-import 'format_price.dart';
+import 'text_format/default_text.dart';
+import 'text_format/format_price.dart';
 import 'rating.dart';
 
 class ProductWidget extends StatelessWidget {

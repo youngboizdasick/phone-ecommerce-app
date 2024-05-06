@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/data_sources/api_services.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/services/api_services.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
