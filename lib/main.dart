@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:phone_store_clean_architectutre/app_bloc_observer.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/blocs/login/login_bloc.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/home/home_page.dart';
 import 'config/themes/app_themes.dart';
 import 'features/phone_store/services/api_services.dart';
 import 'features/phone_store/views/screens/auth/signin_or_signup.dart';
@@ -26,7 +25,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'SPhone',
         debugShowCheckedModeBanner: false,
-        home: const BottomTabBar(),
+        home: _handleUserLoginOrNot(alreadyLoggedIn),
         theme: theme(),
         routes: {
           '/HomePage': (context) => const BottomTabBar(),
