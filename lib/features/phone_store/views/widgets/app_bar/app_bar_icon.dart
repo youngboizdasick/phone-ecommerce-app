@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../config/themes/app_pallete.dart';
-import '../../../../core/constants/constants.dart';
+import '../../../../../../config/themes/app_pallete.dart';
+import '../../../../../core/constants/constants.dart';
 
 class IconButtonWidget extends StatelessWidget {
   final IconData? icon;

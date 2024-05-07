@@ -1,12 +1,12 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
-import '../../../../../config/themes/app_pallete.dart';
-import '../../../../core/constants/constants.dart';
-import '../../models/smartphone.dart';
-import '../screens/product_detail/product_detail_page.dart';
-import 'text_format/default_text.dart';
-import 'text_format/format_price.dart';
-import 'rating.dart';
+import '../../../../../../config/themes/app_pallete.dart';
+import '../../../../../core/constants/constants.dart';
+import '../../../models/smartphone.dart';
+import '../product_detail/product_detail_page.dart';
+import '../../widgets/text_format/default_text.dart';
+import '../../widgets/text_format/format_price.dart';
+import '../../widgets/rating.dart';
 
 class ProductWidget extends StatelessWidget {
   final SmartPhone smartPhone;

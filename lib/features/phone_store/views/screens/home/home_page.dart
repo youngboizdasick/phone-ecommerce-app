@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar_custom.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_custom.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';

@@ -3,7 +3,7 @@ const double radius = 8;
 const double defaultFontSize = 16;
 const double headerFontSize = 20;
 const double logoSize = 72;
-const double iconSize = 32;
+const double iconSize = 28;
 const double titleLogoSize = 20;
 
 const List<String> priceFilter = [

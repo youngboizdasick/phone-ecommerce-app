@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar_custom.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_custom.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';
 import '../../../models/store.dart';
 import '../../widgets/text_format/default_text.dart';
 import '../../widgets/text_format/header_text.dart';
-import '../../widgets/product_filter_list_view.dart';
-import '../../widgets/product_tile.dart';
+import '../../widgets/filter/product_filter_list_view.dart';
+import 'product_tile.dart';
 
 class ProductCatalogPage extends StatelessWidget {
   final List<SmartPhone> phones;

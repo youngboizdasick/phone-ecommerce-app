@@ -10,6 +10,7 @@ class NotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppPallete.whiteColor,
       appBar: _buildAppBar(context),
       body: _buildBody(),
     );

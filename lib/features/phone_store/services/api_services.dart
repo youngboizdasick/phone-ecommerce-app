@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:curl_logger_dio_interceptor/curl_logger_dio_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -111,6 +110,11 @@ class ApiServices {
     return false;
   }
 
+  Future<bool> logout() async{
+    await _storage.deleteAll();
+    return true;
+  }
+
   Future<ProductIntroModel?> fetchProductDetail(String uuid) async {
     try {
       final response = await api.get(ApiUrls().API_DETAIL_PRODUCT + uuid);
@@ -121,20 +125,5 @@ class ApiServices {
       print(e);
     }
     return null;
-  }
-
-  _returnResponse(dynamic response) {
-    switch (response.statusCode) {
-      case 200:
-        var responseJson = jsonDecode(response.data.toString());
-        return responseJson;
-
-      case 400:
-        var responseError = jsonDecode(response.data.toString());
-        return responseError["error"];
-
-      default:
-        return Exception('Default Error ${response.statusCode.toString()}');
-    }
   }
 }

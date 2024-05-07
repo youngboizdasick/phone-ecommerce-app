@@ -1,7 +1,7 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar_icon.dart';
-import '../../../../core/constants/constants.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_icon.dart';
+import '../../../../../core/constants/constants.dart';
 
 class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
   final bool? displayBackButton;
@@ -45,7 +45,7 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
                 padding: const EdgeInsets.only(right: elementSpacing),
                 child: IconButtonWidget(
                   icon: BootstrapIcons.bag,
-                  onPressed: () => Navigator.pushNamed(context, '/cartPage'),
+                  onPressed: () => Navigator.pushNamed(context, '/CartPage'),
                 ),
               ),
             ])

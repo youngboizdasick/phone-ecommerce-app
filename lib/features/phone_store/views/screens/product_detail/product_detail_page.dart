@@ -1,17 +1,18 @@
+import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar_custom.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_custom.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';
 import '../../widgets/text_format/default_text.dart';
+import '../../widgets/text_format/format_price.dart';
 import '../../widgets/text_format/header_text.dart';
-import '../../widgets/product_detail/bottom_nav_bar.dart';
 import '../../widgets/product_detail/color_tile.dart';
 import '../../widgets/product_detail/image_slider/image_slide_tile.dart';
 import '../../widgets/product_detail/image_slider/images_slider.dart';
 import '../../widgets/product_detail/warehouse_tile.dart';
-import '../../widgets/product_filter_list_view.dart';
+import '../../widgets/filter/product_filter_list_view.dart';
 import '../../widgets/rating.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -40,7 +41,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         extendBodyBehindAppBar: true,
         appBar: const BackButtonAndCartButton(),
         body: _buildBody(),
-        bottomNavigationBar: BottomNavBarProductDetailWidget(price: price),
+        bottomNavigationBar: _buildBottomNavBar(price), //BottomNavBarProductDetailWidget(price: price),
       ),
     );
   }
@@ -253,6 +254,82 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ],
     );
   }
+
+  _buildBottomNavBar(int price) {
+    return Container(
+      height: 80,
+      decoration: const BoxDecoration(
+        color: AppPallete.whiteColor,
+        border: Border(top: BorderSide(color: AppPallete.background)),
+      ),
+      child: Row(
+        children: [
+          _buildFavoriteBtn(),
+          _buildAddToCartBtn(),
+          _buildTotalPrice(price),
+        ],
+      ),
+    );
+  }
+
+  _buildFavoriteBtn() {
+    return Expanded(
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(right: BorderSide(width: 1)),
+        ),
+        child: IconButton(
+            onPressed: onFavoritePressed,
+            icon: const Icon(
+              BootstrapIcons.heart,
+              color: AppPallete.blackColor,
+            ),
+            iconSize: iconSize),
+      ),
+    );
+  }
+
+  _buildAddToCartBtn() {
+    return Expanded(
+      child: IconButton(
+          onPressed: onAddToCartPressed,
+          icon: const Icon(
+            BootstrapIcons.bag_plus,
+            color: AppPallete.blackColor,
+          ),
+          iconSize: iconSize),
+    );
+  }
+
+  _buildTotalPrice(int price) {
+    return Expanded(
+      flex: 2,
+      child: Container(
+        color: AppPallete.btnColor,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'mua với giá'.toUpperCase(),
+              style: const TextStyle(
+                fontSize: headerFontSize,
+                fontWeight: FontWeight.bold,
+                color: AppPallete.whiteColor,
+              ),
+            ),
+            FormatPrice(
+              price: price,
+              fontSize: headerFontSize,
+              color: AppPallete.whiteColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void onFavoritePressed() {}
+  void onAddToCartPressed() {}
 
   @override
   void initState() {

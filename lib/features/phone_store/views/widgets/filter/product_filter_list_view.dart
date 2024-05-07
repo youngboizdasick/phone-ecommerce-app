@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/constants.dart';
+import '../../../../../core/constants/constants.dart';
 import 'filter_option.dart';
 
 class ProductFilterListViewWidget extends StatelessWidget {

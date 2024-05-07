@@ -44,10 +44,7 @@ class BottomNavBar extends StatelessWidget {
       // home page
       BottomNavigationBarItem(
           icon: Icon(BootstrapIcons.house_door, size: iconSize),
-          activeIcon: Icon(
-            BootstrapIcons.house_door_fill,
-            size: iconSize,
-          ),
+          activeIcon: Icon(BootstrapIcons.house_door_fill, size: iconSize),
           label: 'Trang chủ'),
 
       // favorite page
