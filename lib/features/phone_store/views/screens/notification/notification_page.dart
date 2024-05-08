@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
-import '../../widgets/text_format/header_text.dart';
 import '../../widgets/notification_tile.dart';
+import '../../widgets/text_format/text_widget.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});

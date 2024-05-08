@@ -4,7 +4,7 @@ import "package:flutter_bloc/flutter_bloc.dart";
 import "package:phone_store_clean_architectutre/features/phone_store/blocs/login/login_bloc.dart";
 import "package:phone_store_clean_architectutre/features/phone_store/services/api_services.dart";
 import "package:phone_store_clean_architectutre/features/phone_store/views/widgets/bottom_nav_bar/bottom_tab_bar.dart";
-import "package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/default_text.dart";
+import "package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart";
 import "../../../../../../config/themes/app_pallete.dart";
 import "../../../../../core/constants/constants.dart";
 import "../../widgets/signin_signup/auth_btn.dart";
@@ -112,7 +112,7 @@ class _SignInPageState extends State<SignInPage> {
           ),
           const SizedBox(height: elementSpacing),
           // sign in button
-          AuthButtonWidget(
+          ButtonWidget(
             onAccountBtnPressed: () => _onLoginPressed(),
             buttonText: 'Đăng nhập',
           ),

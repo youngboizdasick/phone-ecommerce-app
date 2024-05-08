@@ -3,13 +3,13 @@ import "package:phone_store_clean_architectutre/config/themes/app_pallete.dart";
 
 import "../../../../../core/constants/constants.dart";
 
-class AuthButtonWidget extends StatelessWidget {
+class ButtonWidget extends StatelessWidget {
   final Function()? onAccountBtnPressed;
   final String buttonText;
 
-  const AuthButtonWidget({
+  const ButtonWidget({
     super.key,
-    required this.onAccountBtnPressed,
+    this.onAccountBtnPressed,
     required this.buttonText,
   });
 

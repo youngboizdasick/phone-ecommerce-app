@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/cart/cart_tile.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_custom.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/default_text.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/header_text.dart';
-
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart';
 import '../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../widgets/text_format/format_price.dart';

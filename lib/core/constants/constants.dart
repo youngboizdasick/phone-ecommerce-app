@@ -13,9 +13,3 @@ const List<String> priceFilter = [
   '20m - 30m',
   '30m - 50m',
 ];
-
-const Map<String, String> header = {
-  "appCode": 'RETAIL',
-};
-
-const String baseUrl = 'http://phucha.duckdns.org:5001';

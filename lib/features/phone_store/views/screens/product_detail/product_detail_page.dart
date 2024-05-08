@@ -5,9 +5,8 @@ import 'package:phone_store_clean_architectutre/features/phone_store/views/widge
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';
-import '../../widgets/text_format/default_text.dart';
+import '../../widgets/text_format/text_widget.dart';
 import '../../widgets/text_format/format_price.dart';
-import '../../widgets/text_format/header_text.dart';
 import '../../widgets/product_detail/color_tile.dart';
 import '../../widgets/product_detail/image_slider/image_slide_tile.dart';
 import '../../widgets/product_detail/image_slider/images_slider.dart';

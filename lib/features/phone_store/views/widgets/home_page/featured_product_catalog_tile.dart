@@ -1,11 +1,11 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';
 import '../../screens/product_detail/product_detail_page.dart';
 import '../text_format/format_price.dart';
-import '../text_format/header_text.dart';
 import '../rating.dart';
 
 class FeaturedProductCatalogWidget extends StatelessWidget {
@@ -76,7 +76,7 @@ class FeaturedProductCatalogWidget extends StatelessWidget {
     return SizedBox(
       width: widthTitle,
       height: heightTitle,
-      child: HeaderTextWidget(text: smartPhone.name),
+      child: DefaultTextWidget(text: smartPhone.name),
     );
   }
 

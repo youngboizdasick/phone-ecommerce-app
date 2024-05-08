@@ -4,7 +4,7 @@ import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';
 import '../product_detail/product_detail_page.dart';
-import '../../widgets/text_format/default_text.dart';
+import '../../widgets/text_format/text_widget.dart';
 import '../../widgets/text_format/format_price.dart';
 import '../../widgets/rating.dart';
 

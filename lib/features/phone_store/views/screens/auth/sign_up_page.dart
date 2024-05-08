@@ -92,7 +92,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
           const SizedBox(height: elementSpacing),
           // sign up button
-          AuthButtonWidget(
+          ButtonWidget(
             onAccountBtnPressed: () => _onAccountBtnPressed,
             buttonText: 'Đăng ký',
           ),

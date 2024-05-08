@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/constants.dart';
 import 'app_pallete.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 ThemeData theme() {
   return ThemeData(
-    fontFamily: '.SF UI Text',
-    appBarTheme: appBarTheme(),
-    inputDecorationTheme: inputDecorationTheme(),
+    fontFamily: GoogleFonts.openSans().fontFamily,
+    appBarTheme: _appBarTheme(),
+    inputDecorationTheme: _inputDecorationTheme(),
   );
 }
 
-AppBarTheme appBarTheme() {
+AppBarTheme _appBarTheme() {
   return const AppBarTheme(
     color: AppPallete.whiteColor,
     elevation: 0,
@@ -24,7 +25,7 @@ AppBarTheme appBarTheme() {
   );
 }
 
-InputDecorationTheme inputDecorationTheme() {
+InputDecorationTheme _inputDecorationTheme() {
   return InputDecorationTheme(
     filled: true,
     fillColor: AppPallete.whiteColor,

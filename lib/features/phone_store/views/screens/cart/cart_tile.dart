@@ -2,7 +2,7 @@ import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:phone_store_clean_architectutre/config/themes/app_pallete.dart';
 import 'package:phone_store_clean_architectutre/core/constants/constants.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/default_text.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/format_price.dart';
 
 class CartTile extends StatefulWidget {

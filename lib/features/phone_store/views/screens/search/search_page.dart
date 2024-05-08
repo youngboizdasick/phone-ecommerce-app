@@ -4,9 +4,8 @@ import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';
 import '../../../models/store.dart';
-import '../../widgets/text_format/default_text.dart';
+import '../../widgets/text_format/text_widget.dart';
 import '../../widgets/home_page/featured_product_catalog_tile.dart';
-import '../../widgets/text_format/header_text.dart';
 import '../../widgets/home_page/product_catalog_tile.dart';
 import '../../widgets/search_bar.dart';
 

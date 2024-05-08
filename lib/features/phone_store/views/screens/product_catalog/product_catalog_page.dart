@@ -4,8 +4,7 @@ import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../models/smartphone.dart';
 import '../../../models/store.dart';
-import '../../widgets/text_format/default_text.dart';
-import '../../widgets/text_format/header_text.dart';
+import '../../widgets/text_format/text_widget.dart';
 import '../../widgets/filter/product_filter_list_view.dart';
 import 'product_tile.dart';
 
