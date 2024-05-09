@@ -1,20 +1,25 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:notification_center/notification_center.dart';
 import 'package:phone_store_clean_architectutre/config/themes/app_pallete.dart';
 import 'package:phone_store_clean_architectutre/core/constants/constants.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/cart.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/format_price.dart';
 
 class CartTile extends StatefulWidget {
-  const CartTile({super.key});
+  final CartModel cartModel;
+  final bool isChoosed;
+  const CartTile({super.key, required this.cartModel, required this.isChoosed});
 
   @override
   State<CartTile> createState() => _CartTileState();
 }
 
 class _CartTileState extends State<CartTile> {
-  bool isChecked = false;
-  int quantity = 1;
+  bool? _isChecked;
+  bool? prevChecked;
+
   int maxQuantity = 5;
   @override
   Widget build(BuildContext context) {
@@ -42,20 +47,30 @@ class _CartTileState extends State<CartTile> {
 
   _buildCheckbox() {
     return Checkbox(
-      value: isChecked,
+      value: _isChecked,
       checkColor: AppPallete.background,
       activeColor: AppPallete.btnColor,
       onChanged: (bool? value) {
         setState(() {
-          isChecked = value!;
+          _isChecked = value!;
+          widget.cartModel.isChoosed = _isChecked;
         });
+        _isChecked == true
+            ? NotificationCenter().notify<int>(
+                'increaseTotalPayment',
+                data: widget.cartModel.quantity! * widget.cartModel.price!,
+              )
+            : NotificationCenter().notify<int>(
+                'decreaseTotalPayment',
+                data: widget.cartModel.quantity! * widget.cartModel.price!,
+              );
       },
     );
   }
 
   _buildImage(double heightScreen) {
     return Image.asset(
-      './assets/images/iPhone/14_black.png',
+      widget.cartModel.image ?? './assets/images/gray.jpg',
       height: heightScreen / 10,
     );
   }
@@ -65,9 +80,10 @@ class _CartTileState extends State<CartTile> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         // title product
-        const DefaultTextWidget(text: 'iPhone 14'),
+        DefaultTextWidget(text: widget.cartModel.name ?? 'Đang tải'),
         // price
-        const FormatPrice(price: 1000000, color: AppPallete.errorColor),
+        FormatPrice(
+            price: widget.cartModel.price ?? 0, color: AppPallete.errorColor),
         // quantity adjustment
         _buildQuantityAdjusment(),
       ],
@@ -85,11 +101,19 @@ class _CartTileState extends State<CartTile> {
   }
 
   _buildDecreaseButton() {
+    int quantity = widget.cartModel.quantity!;
     return IconButton(
       onPressed: quantity != 0
           ? (() {
               setState(() {
                 quantity > 0 ? quantity-- : quantity;
+                widget.cartModel.quantity = quantity;
+                if (_isChecked == true) {
+                  NotificationCenter().notify<int>(
+                    'decreaseQuantity',
+                    data: widget.cartModel.price,
+                  );
+                }
               });
             })
           : null,
@@ -109,23 +133,59 @@ class _CartTileState extends State<CartTile> {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: elementSpacing),
-        child: DefaultTextWidget(text: '$quantity'),
+        child: DefaultTextWidget(text: '${widget.cartModel.quantity!}'),
       ),
     );
   }
 
   _buildIncreasebutton() {
+    int quantity = widget.cartModel.quantity!;
     return IconButton(
       onPressed: quantity < maxQuantity
           ? (() {
               setState(() {
                 quantity++;
+                widget.cartModel.quantity = quantity;
               });
+              if (_isChecked == true) {
+                NotificationCenter().notify<int>(
+                  'increaseQuantity',
+                  data: widget.cartModel.price,
+                );
+              }
             })
           : null,
       icon: const Icon(BootstrapIcons.plus),
     );
   }
 
-  void _decreaseQuantity() {}
+  @override
+  void initState() {
+    super.initState();
+    _isChecked = widget.isChoosed;
+    NotificationCenter().subscribe('cartItemSelected', (bool isChecked) {
+      setState(() {
+        prevChecked = _isChecked;
+        _isChecked = isChecked;
+      });
+      if (prevChecked == false) {
+        NotificationCenter().notify<int>(
+          'increaseTotalPayment',
+          data: widget.cartModel.quantity! * widget.cartModel.price!,
+        );
+      }
+      if (_isChecked == false) {
+        NotificationCenter().notify<int>(
+          'decreaseTotalPayment',
+          data: widget.cartModel.quantity! * widget.cartModel.price!,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    NotificationCenter().unsubscribe('cartItemSelected');
+    super.dispose();
+  }
 }

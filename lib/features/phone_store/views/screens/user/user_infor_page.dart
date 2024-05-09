@@ -11,36 +11,129 @@ class UserInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _usernameController = TextEditingController(text: 'nguyenvana');
-    TextEditingController _passwordController = TextEditingController(text: '********');
-    TextEditingController _nameController = TextEditingController(text: 'Nguyễn Văn A');
-    TextEditingController _emailController = TextEditingController(text: 'nguyenvana@gmail.com');
-    TextEditingController _phoneController = TextEditingController(text: '0123456789');
-    TextEditingController _addressController = TextEditingController(text: 'Đường A1, phường B2, quận C3, Tp. HCM');
     return Scaffold(
       backgroundColor: AppPallete.whiteColor,
-      appBar: BackButtonAndTitle(
-          title: HeaderTextWidget(text: 'Thông tin cá nhân')),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: elementSpacing),
+      appBar: _buildAppBar(),
+      body: _buildBody(),
+    );
+  }
+
+  _buildAppBar() {
+    return const BackButtonAndTitle(
+        title: HeaderTextWidget(text: 'Thông tin cá nhân'));
+  }
+
+  _buildBody() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: elementSpacing),
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
-            InputTextFiledWidget(controller: _usernameController, readOnly: true),
-            SizedBox(height: elementSpacing),
-            InputTextFiledWidget(controller: _passwordController),
-            SizedBox(height: elementSpacing),
-            InputTextFiledWidget(controller: _nameController),
-            SizedBox(height: elementSpacing),
-            InputTextFiledWidget(controller: _emailController),
-            SizedBox(height: elementSpacing),
-            InputTextFiledWidget(controller: _phoneController),
-            SizedBox(height: elementSpacing),
-            InputTextFiledWidget(controller: _addressController),
-            SizedBox(height: elementSpacing),
-            ButtonWidget(buttonText: 'Lưu'),
+            _buildUsernameField(),
+            _buildPasswordField(),
+            _buildNameField(),
+            _buildDatetimeField(),
+            _buildEmailField(),
+            _buildPhoneField(),
+            _buildAddressField(),
+            // save button
+            const ButtonWidget(buttonText: 'Lưu'),
           ],
         ),
       ),
+    );
+  }
+
+  _buildUsernameField() {
+    TextEditingController _usernameController =
+        TextEditingController(text: 'nguyenvana');
+    return Column(
+      children: [
+        const Row(children: [TextWidget(text: 'Tên đăng nhập', isBold: true)]),
+        InputTextFiledWidget(controller: _usernameController, readOnly: true),
+        const SizedBox(height: elementSpacing),
+      ],
+    );
+  }
+
+  _buildPasswordField() {
+    TextEditingController _passwordController =
+        TextEditingController(text: 'nguyen.manh');
+    return Column(
+      children: [
+        const Row(children: [TextWidget(text: 'Mật khẩu', isBold: true)]),
+        ChangePasswordField(controller: _passwordController),
+        const SizedBox(height: elementSpacing),
+      ],
+    );
+  }
+
+  _buildNameField() {
+    TextEditingController _nameController =
+        TextEditingController(text: 'Nguyễn Văn A');
+    return Column(
+      children: [
+        const Row(children: [TextWidget(text: 'Họ và tên', isBold: true)]),
+        InputTextFiledWidget(controller: _nameController),
+        const SizedBox(height: elementSpacing),
+      ],
+    );
+  }
+
+  _buildDatetimeField() {
+    TextEditingController _datetimeController = TextEditingController();
+    return Column(
+      children: [
+        const Row(children: [TextWidget(text: 'Ngày sinh', isBold: true)]),
+        DatetimeField(controller: _datetimeController),
+        const SizedBox(height: elementSpacing),
+      ],
+    );
+  }
+
+  _buildEmailField() {
+    TextEditingController _emailController =
+        TextEditingController(text: 'nguyenvana@gmail.com');
+    return Column(
+      children: [
+        const Row(children: [TextWidget(text: 'Email', isBold: true)]),
+        InputTextFiledWidget(
+          controller: _emailController,
+          readOnly: true,
+        ),
+        const SizedBox(height: elementSpacing),
+      ],
+    );
+  }
+
+  _buildPhoneField() {
+    TextEditingController _phoneController =
+        TextEditingController(text: '0123456789');
+    return Column(
+      children: [
+        const Row(children: [TextWidget(text: 'Số điện thoại', isBold: true)]),
+        InputTextFiledWidget(
+          controller: _phoneController,
+          readOnly: true,
+        ),
+        const SizedBox(height: elementSpacing),
+      ],
+    );
+  }
+
+  _buildAddressField() {
+    TextEditingController _addressController =
+        TextEditingController(text: 'Đường A1, phường B2, quận C3, Tp. HCM');
+    return Column(
+      children: [
+        const Row(children: [TextWidget(text: 'Địa chỉ', isBold: true)]),
+        InputTextFiledWidget(
+          controller: _addressController,
+          hintText: 'Phường/Xã, Quận/Huyện, Thành phố/Tỉnh',
+        ),
+        const SizedBox(height: elementSpacing),
+      ],
     );
   }
 }

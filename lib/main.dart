@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'SPhone',
         debugShowCheckedModeBanner: false,
-        home: const BottomTabBar(), //_handleUserLoginOrNot(alreadyLoggedIn),
+        home: _handleUserLoginOrNot(alreadyLoggedIn),
         theme: theme(),
         routes: {
           '/HomePage': (context) => const BottomTabBar(),

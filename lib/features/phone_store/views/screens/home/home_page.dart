@@ -14,9 +14,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController _searchController = TextEditingController();
     return Scaffold(
       backgroundColor: AppPallete.background,
-      appBar: SearchBarAndCart(title: SearchBarWidget()),
+      appBar: SearchBarAndCart(title: SearchBarWidget(controller: _searchController,)),
       body: _buildBody(context),
     );
   }

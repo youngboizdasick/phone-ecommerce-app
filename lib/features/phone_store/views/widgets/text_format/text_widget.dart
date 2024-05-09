@@ -6,8 +6,14 @@ class TextWidget extends StatelessWidget {
   final String text;
   final bool? isBold;
   final double? fontSize;
-  const TextWidget(
-      {super.key, required this.text, this.isBold = false, this.fontSize});
+  final Color? color;
+  const TextWidget({
+    super.key,
+    required this.text,
+    this.isBold = false,
+    this.fontSize,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +25,7 @@ class TextWidget extends StatelessWidget {
       style: TextStyle(
         fontSize: fontSize ?? defaultFontSize,
         fontWeight: isBold == true ? FontWeight.bold : FontWeight.w500,
+        color: color ?? Colors.black,
       ),
     );
   }
