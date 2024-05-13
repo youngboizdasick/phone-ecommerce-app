@@ -1,5 +1,4 @@
-class ProductFullModel {
-  String? id;
+class ProductDetailModel {
   String? name;
   String? code;
   String? productId;
@@ -7,23 +6,19 @@ class ProductFullModel {
   int? rateCount;
   int? soldCount;
   List<Images>? images;
-  List<ProductItemAttributes>? productItemAttributes;
+  List<Attributes>? attributes;
 
-  ProductFullModel(
-      {this.id,
-      this.name,
+  ProductDetailModel(
+      {this.name,
       this.code,
       this.productId,
       this.listPriced,
       this.rateCount,
       this.soldCount,
       this.images,
-      this.productItemAttributes});
+      this.attributes,});
 
-  ProductFullModel.fromJson(Map<String, dynamic> json) {
-    if (json["id"] is String) {
-      id = json["id"];
-    }
+  ProductDetailModel.fromJson(Map<String, dynamic> json) {
     if (json["name"] is String) {
       name = json["name"];
     }
@@ -47,18 +42,21 @@ class ProductFullModel {
           ? null
           : (json["images"] as List).map((e) => Images.fromJson(e)).toList();
     }
-    if (json["productItemAttributes"] is List) {
-      productItemAttributes = json["productItemAttributes"] == null
+    if (json["attributes"] is List) {
+      attributes = json["attributes"] == null
           ? null
-          : (json["productItemAttributes"] as List)
-              .map((e) => ProductItemAttributes.fromJson(e))
+          : (json["attributes"] as List)
+              .map((e) => Attributes.fromJson(e))
               .toList();
     }
   }
 
+  static List<ProductDetailModel> fromList(List<Map<String, dynamic>> list) {
+    return list.map((map) => ProductDetailModel.fromJson(map)).toList();
+  }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> _data = <String, dynamic>{};
-    _data["id"] = id;
     _data["name"] = name;
     _data["code"] = code;
     _data["productId"] = productId;
@@ -68,22 +66,21 @@ class ProductFullModel {
     if (images != null) {
       _data["images"] = images?.map((e) => e.toJson()).toList();
     }
-    if (productItemAttributes != null) {
-      _data["productItemAttributes"] =
-          productItemAttributes?.map((e) => e.toJson()).toList();
+    if (attributes != null) {
+      _data["attributes"] = attributes?.map((e) => e.toJson()).toList();
     }
     return _data;
   }
 }
 
-class ProductItemAttributes {
+class Attributes {
   String? fieldKey;
   String? fieldValue;
   int? fieldType;
 
-  ProductItemAttributes({this.fieldKey, this.fieldValue, this.fieldType});
+  Attributes({this.fieldKey, this.fieldValue, this.fieldType});
 
-  ProductItemAttributes.fromJson(Map<String, dynamic> json) {
+  Attributes.fromJson(Map<String, dynamic> json) {
     if (json["fieldKey"] is String) {
       fieldKey = json["fieldKey"];
     }
@@ -93,6 +90,10 @@ class ProductItemAttributes {
     if (json["fieldType"] is int) {
       fieldType = json["fieldType"];
     }
+  }
+
+  static List<Attributes> fromList(List<Map<String, dynamic>> list) {
+    return list.map((map) => Attributes.fromJson(map)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -113,6 +114,10 @@ class Images {
     if (json["imageUrl"] is String) {
       imageUrl = json["imageUrl"];
     }
+  }
+
+  static List<Images> fromList(List<Map<String, dynamic>> list) {
+    return list.map((map) => Images.fromJson(map)).toList();
   }
 
   Map<String, dynamic> toJson() {

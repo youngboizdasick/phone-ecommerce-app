@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/models/cart.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/cart_model.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/services/api_services.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/cart/cart_tile.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_custom.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart';
@@ -16,26 +17,6 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<CartModel> cartItems = [
-    CartModel(
-      image: './assets/images/iPhone/14_black.png',
-      name: 'iPhone 14',
-      price: 20000000,
-      quantity: 1,
-    ),
-    CartModel(
-      image: './assets/images/iPhone/14_promax_black.png',
-      name: 'iPhone 14 Pro Max',
-      price: 30000000,
-      quantity: 1,
-    ),
-    CartModel(
-      image: './assets/images/iPhone/15_black.png',
-      name: 'iPhone 15',
-      price: 25000000,
-      quantity: 1,
-    ),
-  ];
   bool isChecked = false;
   int price = 0;
   @override
@@ -60,11 +41,30 @@ class _CartPageState extends State<CartPage> {
   }
 
   _buildCartItemListView() {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: cartItems.length,
-      itemBuilder: (context, index) =>
-          CartTile(cartModel: cartItems[index], isChoosed: isChecked),
+    ApiServices apiServices = ApiServices();
+    final cartDetail = apiServices.getCurrentCart();
+    return FutureBuilder<CartModelApi?>(
+      future: cartDetail,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: TextWidget(text: 'Đang tải'));
+        }
+        final cartDetail = snapshot.data!;
+        if (cartDetail.cartProducts!.isEmpty) {
+          return const SizedBox(height: 1);
+        }
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: cartDetail.cartProducts!.length,
+          itemBuilder: (context, index) => CartTile(
+              cartProducts: cartDetail.cartProducts![index],
+              isChoosed: isChecked),
+        );
+      },
     );
   }
 
@@ -86,38 +86,55 @@ class _CartPageState extends State<CartPage> {
   }
 
   _buildCheckAllButton() {
-    return Expanded(
-      flex: 2,
-      child: Container(
-        decoration: const BoxDecoration(
-          border: Border(right: BorderSide(width: 1)),
-        ),
-        child: Row(
-          children: [
-            // check all
-            Transform.scale(
-              scale: 1.5,
-              child: Checkbox(
-                value: isChecked,
-                checkColor: AppPallete.background,
-                activeColor: AppPallete.btnColor,
-                side: BorderSide(width: 1),
-                onChanged: (bool? value) {
-                  isChecked = value!;
-                  for (var item in cartItems) {
-                    item.isChoosed = isChecked;
-                  }
-                  setState(() {});
-                  NotificationCenter()
-                      .notify<bool>('cartItemSelected', data: isChecked);
-                },
-              ),
+    ApiServices apiServices = ApiServices();
+    final cart = apiServices.getCurrentCart();
+
+    return FutureBuilder<CartModelApi?>(
+      future: cart,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: TextWidget(text: 'Đang tải'));
+        }
+
+        final currentCart = snapshot.data!;
+        return Expanded(
+          flex: 2,
+          child: Container(
+            decoration: const BoxDecoration(
+              border: Border(right: BorderSide(width: 1)),
             ),
-            // title
-            DefaultTextWidget(text: 'Tất cả'),
-          ],
-        ),
-      ),
+            child: Row(
+              children: [
+                // check all
+                Transform.scale(
+                  scale: 1.5,
+                  child: Checkbox(
+                    value: isChecked,
+                    checkColor: AppPallete.background,
+                    activeColor: AppPallete.btnColor,
+                    side: BorderSide(width: 1),
+                    onChanged: (bool? value) {
+                      isChecked = value!;
+                      for (var item in currentCart.cartProducts!) {
+                        item.isChoosed = isChecked;
+                      }
+                      setState(() {});
+                      NotificationCenter()
+                          .notify<bool>('cartItemSelected', data: isChecked);
+                    },
+                  ),
+                ),
+                // title
+                DefaultTextWidget(text: 'Tất cả'),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

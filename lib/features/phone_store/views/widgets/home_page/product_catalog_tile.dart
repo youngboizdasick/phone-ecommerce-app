@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store_clean_architectutre/config/themes/app_pallete.dart';
-
 import '../../../../../core/constants/constants.dart';
-import '../../../models/smartphone.dart';
 import '../../screens/product_catalog/product_catalog_page.dart';
 
 class ProductCatalogWidget extends StatelessWidget {
-  final List<SmartPhone> smartPhoneCategory;
-  final String imagePATH;
+  final String? imagePATH;
   final String title;
+  final String? brandId;
   const ProductCatalogWidget({
     super.key,
-    required this.smartPhoneCategory,
     required this.title,
     required this.imagePATH,
+    this.brandId,
   });
 
   @override
@@ -26,7 +24,7 @@ class ProductCatalogWidget extends StatelessWidget {
             builder: (context) {
               return ProductCatalogPage(
                 titleCatalog: title,
-                phones: smartPhoneCategory,
+                brandId: brandId,
               );
             },
           ),
@@ -42,7 +40,10 @@ class ProductCatalogWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // image
-            Image.asset(imagePATH, height: 50),
+            imagePATH != null
+                ? Image.network(imagePATH!, height: 50, width: 50)
+                : Image.asset('./assets/images/iPhone/14_black.png',
+                    height: 50, width: 70),
 
             const SizedBox(height: elementSpacing / 2),
             // title

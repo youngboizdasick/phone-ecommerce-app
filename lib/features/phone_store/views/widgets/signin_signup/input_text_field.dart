@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phone_store_clean_architectutre/config/themes/app_pallete.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/changepassword_page.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/changePassword_page.dart';
 import '../../../../../core/constants/constants.dart';
 
 class InputTextFiledWidget extends StatelessWidget {
@@ -33,7 +33,7 @@ class InputTextFiledWidget extends StatelessWidget {
       onTap: () => controller?.selection = TextSelection(
           baseOffset: 0, extentOffset: controller!.value.text.length),
       onTapOutside: (event) => focusNode.unfocus(),
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: TextInputType.text,
       textInputAction: textInputAction,
       obscureText: isObscureText,
       autocorrect: false,
@@ -75,7 +75,7 @@ class DatetimeField extends StatelessWidget {
       keyboardType: TextInputType.number,
       onTapOutside: (event) => focusNode.unfocus(),
       autocorrect: false,
-      decoration: const InputDecoration(hintText: '31/12/1980'),
+      decoration: const InputDecoration(hintText: 'Nhấn để cập nhật ngày sinh'),
       style: const TextStyle(
         fontWeight: FontWeight.normal,
         fontSize: defaultFontSize,

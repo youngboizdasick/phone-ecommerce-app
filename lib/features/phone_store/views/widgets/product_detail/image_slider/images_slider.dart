@@ -33,7 +33,7 @@ class _ImagesSliderState extends State<ImagesSlider> {
     double heightSize = MediaQuery.sizeOf(context).height;
     double heightSlide = heightSize * 0.4;
     return Container(
-      color: AppPallete.background,
+      color: AppPallete.whiteColor,
       child: Column(
         children: [
           CarouselSlider(
@@ -68,7 +68,7 @@ class _ImagesSliderState extends State<ImagesSlider> {
           dotHeight: 8,
           dotWidth: 8,
           spacing: elementSpacing,
-          dotColor: AppPallete.whiteColor,
+          dotColor: AppPallete.background,
           activeDotColor: AppPallete.blackColor,
           paintStyle: PaintingStyle.fill,
         ),

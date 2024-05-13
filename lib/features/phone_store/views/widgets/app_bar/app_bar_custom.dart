@@ -2,7 +2,7 @@ import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:phone_store_clean_architectutre/config/themes/app_pallete.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_icon.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/cart_lead.dart';
 import '../../../../../core/constants/constants.dart';
 
 class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
@@ -10,12 +10,14 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
   final Widget? title;
   final bool? displayCartButton;
   final bool forceMaterialTransparency;
+  final double? iconSize;
   const AppBarCustom({
     super.key,
     this.displayBackButton = false,
     this.title,
     this.displayCartButton = false,
     this.forceMaterialTransparency = false,
+    this.iconSize,
   });
 
   @override
@@ -31,6 +33,7 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
           ? (IconButtonWidget(
               icon: BootstrapIcons.chevron_left,
               onPressed: () => Navigator.pop(context),
+              size: iconSize,
             ))
           : null,
 
@@ -41,38 +44,7 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
       ),
 
       // action - cart page
-      actions: displayCartButton == true
-          ? ([
-              Padding(
-                padding: const EdgeInsets.only(right: elementSpacing),
-                child: Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    IconButtonWidget(
-                      icon: BootstrapIcons.bag,
-                      onPressed: () =>
-                          Navigator.pushNamed(context, '/CartPage'),
-                    ),
-                    Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppPallete.errorColor,
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(3.0),
-                        child: TextWidget(
-                          text: '99',
-                          fontSize: 12,
-                          isBold: true,
-                          color: AppPallete.whiteColor,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ])
-          : null,
+      actions: displayCartButton == true ? ([CartLeadView()]) : null,
 
       // bottom line
       bottom: forceMaterialTransparency == false
@@ -101,10 +73,11 @@ class BackButtonAndCartButton extends AppBarCustom {
           displayCartButton: true,
           title: null,
           forceMaterialTransparency: true,
+          iconSize: 24,
         );
 }
 
 class BackButtonAndTitle extends AppBarCustom {
   const BackButtonAndTitle({super.key, required Widget title})
-      : super(displayBackButton: true, title: title);
+      : super(displayBackButton: true, title: title, iconSize: 24);
 }

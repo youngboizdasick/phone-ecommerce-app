@@ -1,25 +1,19 @@
-class ProductIntroModel {
-  String? id;
+class ProductBasicModel {
   String? name;
   String? brandId;
   String? code;
   String? avatarLink;
   int? listedPrice;
-  bool? isPublic;
 
-  ProductIntroModel(
-      {this.id,
-      this.name,
-      this.brandId,
-      this.code,
-      this.avatarLink,
-      this.listedPrice,
-      this.isPublic});
+  ProductBasicModel({
+    this.name,
+    this.brandId,
+    this.code,
+    this.avatarLink,
+    this.listedPrice,
+  });
 
-  ProductIntroModel.fromJson(Map<String, dynamic> json) {
-    if (json["id"] is String) {
-      id = json["id"];
-    }
+  ProductBasicModel.fromJson(Map<String, dynamic> json) {
     if (json["name"] is String) {
       name = json["name"];
     }
@@ -35,20 +29,19 @@ class ProductIntroModel {
     if (json["listedPrice"] is int) {
       listedPrice = json["listedPrice"];
     }
-    if (json["isPublic"] is bool) {
-      isPublic = json["isPublic"];
-    }
+  }
+
+  static List<ProductBasicModel> fromList(List<Map<String, dynamic>> list) {
+    return list.map((map) => ProductBasicModel.fromJson(map)).toList();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> _data = <String, dynamic>{};
-    _data["id"] = id;
     _data["name"] = name;
     _data["brandId"] = brandId;
     _data["code"] = code;
     _data["avatarLink"] = avatarLink;
     _data["listedPrice"] = listedPrice;
-    _data["isPublic"] = isPublic;
     return _data;
   }
 }

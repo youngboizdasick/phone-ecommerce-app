@@ -1,16 +1,16 @@
-import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_detail.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/addToCart_button.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
-import '../../../models/smartphone.dart';
 import '../../screens/product_detail/product_detail_page.dart';
 import '../text_format/format_price.dart';
 import '../rating.dart';
 
 class FeaturedProductCatalogWidget extends StatelessWidget {
-  final SmartPhone smartPhone;
-  const FeaturedProductCatalogWidget({super.key, required this.smartPhone});
+  final ProductDetailModel productDetailModel;
+  const FeaturedProductCatalogWidget({super.key, required this.productDetailModel});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class FeaturedProductCatalogWidget extends StatelessWidget {
       alignment: Alignment.bottomRight,
       children: [
         _buildFeaturedProductCatalog(context),
-        _buildAddToCartBtn(),
+        AddToCartButton(size: iconSize, productDetailModel: productDetailModel),
       ],
     );
   }
@@ -38,7 +38,7 @@ class FeaturedProductCatalogWidget extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductDetailPage(smartPhone: smartPhone),
+            builder: (context) => ProductDetailPage(productDetailModel: productDetailModel),
           ),
         );
       },
@@ -67,7 +67,7 @@ class FeaturedProductCatalogWidget extends StatelessWidget {
       height: heightImage,
       child: Padding(
         padding: const EdgeInsets.only(top: elementSpacing),
-        child: Image.asset(smartPhone.imagePATH),
+        child: Image.network(productDetailModel.images![0].imageUrl!),
       ),
     );
   }
@@ -76,7 +76,7 @@ class FeaturedProductCatalogWidget extends StatelessWidget {
     return SizedBox(
       width: widthTitle,
       height: heightTitle,
-      child: DefaultTextWidget(text: smartPhone.name),
+      child: TextWidget(text: productDetailModel.name!, fontSize: 18),
     );
   }
 
@@ -94,14 +94,14 @@ class FeaturedProductCatalogWidget extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                smartPhone.description,
+                productDetailModel.attributes.toString(),
                 softWrap: true,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
 
               // rating point
-              RatingWidget(rating: smartPhone.rating)
+              RatingWidget(rating: productDetailModel.rateCount!.toDouble())
             ],
           ),
         ),
@@ -119,30 +119,12 @@ class FeaturedProductCatalogWidget extends StatelessWidget {
         child: Row(
           children: [
             FormatPrice(
-              price: smartPhone.price,
+              price: productDetailModel.listPriced!,
               fontSize: headerFontSize,
-              color: AppPallete.blackColor,
+              color: AppPallete.errorColor,
             )
           ],
         ),
-      ),
-    );
-  }
-
-  _buildAddToCartBtn() {
-    return Container(
-      padding: const EdgeInsets.all(elementSpacing),
-      decoration: const BoxDecoration(
-        color: AppPallete.btnColor,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(radius),
-          bottomRight: Radius.circular(radius),
-        ),
-      ),
-      child: const Icon(
-        BootstrapIcons.bag_plus,
-        size: iconSize,
-        color: AppPallete.whiteColor,
       ),
     );
   }

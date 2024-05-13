@@ -1,9 +1,12 @@
 import "package:bootstrap_icons/bootstrap_icons.dart";
 import "package:flutter/material.dart";
+import "package:phone_store_clean_architectutre/features/phone_store/services/api_services.dart";
+import "package:phone_store_clean_architectutre/features/phone_store/views/screens/auth/signin_or_signup.dart";
 import "../../../../../../config/themes/app_pallete.dart";
 import "../../../../../core/constants/constants.dart";
 import "../../widgets/signin_signup/auth_btn.dart";
 import "../../widgets/signin_signup/input_text_field.dart";
+import "../../widgets/text_format/text_widget.dart";
 
 class SignUpPage extends StatefulWidget {
   final void Function()? onTap;
@@ -16,7 +19,8 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -25,6 +29,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,7 +98,7 @@ class _SignUpPageState extends State<SignUpPage> {
           const SizedBox(height: elementSpacing),
           // sign up button
           ButtonWidget(
-            onAccountBtnPressed: () => _onAccountBtnPressed,
+            onAccountBtnPressed: () => _onAccountBtnPressed(context),
             buttonText: 'Đăng ký',
           ),
           const SizedBox(height: elementSpacing),
@@ -138,5 +143,37 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void _onAccountBtnPressed(BuildContext context) {}
+  _onAccountBtnPressed(BuildContext context) async {
+    if (_passwordController.text.trim().isEmpty ||
+        _confirmPasswordController.text.trim().isEmpty ||
+        _usernameController.text.trim().isEmpty) {
+      return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: DefaultTextWidget(text: 'Chưa nhập đủ thông tin')));
+    }
+
+    if (_passwordController.text.trim() !=
+        _confirmPasswordController.text.trim()) {
+      return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: DefaultTextWidget(text: 'Mật khẩu không khớp')));
+    }
+    ApiServices apiServices = ApiServices();
+    int? result = await apiServices.register(
+        _usernameController.text.trim(), _passwordController.text.trim());
+    switch (result) {
+      case 0:
+        return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: DefaultTextWidget(text: 'Tài khoản đã tồn tại')));
+      case 1:
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SignInOrSignUp(),
+          ),
+          (route) => false,
+        );
+      default:
+        return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: DefaultTextWidget(text: 'Đăng ký thất bại')));
+    }
+  }
 }

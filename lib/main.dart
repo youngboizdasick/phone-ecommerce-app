@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:phone_store_clean_architectutre/app_bloc_observer.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/blocs/login/login_bloc.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/cart/cart_page.dart';
+import 'app_bloc_observer.dart';
 import 'config/themes/app_themes.dart';
+import 'features/phone_store/blocs/login/login_bloc.dart';
 import 'features/phone_store/services/api_services.dart';
 import 'features/phone_store/views/screens/auth/signin_or_signup.dart';
+import 'features/phone_store/views/screens/cart/cart_page.dart';
 import 'features/phone_store/views/widgets/bottom_nav_bar/bottom_tab_bar.dart';
 
 void main() {

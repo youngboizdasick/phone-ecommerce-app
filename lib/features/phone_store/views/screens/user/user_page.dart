@@ -1,6 +1,9 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/user_infor_page.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/changePassword_page.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/historyPayment_page.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/shippingInformation_page.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/userInfor_page.dart';
 import '../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
 import '../../../services/api_services.dart';
@@ -28,29 +31,22 @@ class _UserPageState extends State<UserPage> {
               UserFeatureWidget(
                 icon: BootstrapIcons.bag_check,
                 title: 'Lịch sử mua hàng',
-                onTap: _onTapHistoryPayment,
+                onTap: () => _onTapHistoryPayment(context),
               ),
               UserFeatureWidget(
                 icon: BootstrapIcons.person,
                 title: 'Thông tin cá nhân',
-                onTap: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const UserInfoPage(),
-                    ),
-                  )
-                },
+                onTap: () => _onTapInformation(context),
               ),
               UserFeatureWidget(
-                icon: BootstrapIcons.question_circle,
-                title: 'Hỗ trợ khách hàng',
-                onTap: _onTapSuport,
+                icon: BootstrapIcons.telephone,
+                title: 'Thông tin giao hàng',
+                onTap: () => _onTapShippingInformation(context),
               ),
               UserFeatureWidget(
-                icon: BootstrapIcons.info_circle,
-                title: 'Phiên bản ứng dụng',
-                onTap: _onTapAppVersion,
+                icon: BootstrapIcons.key,
+                title: 'Đổi mật khẩu',
+                onTap: () => _onTapChangePwd(context),
               ),
               UserFeatureWidget(
                 icon: BootstrapIcons.box_arrow_right,
@@ -73,11 +69,39 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  _onTapHistoryPayment() {}
+  _onTapHistoryPayment(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HistoryPaymentPage(),
+      ),
+    );
+  }
 
-  _onTapInformation() {}
+  _onTapInformation(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const UserInfoPage(),
+      ),
+    );
+  }
 
-  _onTapSuport() {}
+  _onTapChangePwd(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ChangePassWordPage(),
+      ),
+    );
+  }
 
-  _onTapAppVersion() {}
+  _onTapShippingInformation(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ShippingInformationPage(),
+      ),
+    );
+  }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/brand.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_detail.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_custom.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
-import '../../../models/smartphone.dart';
-import '../../../models/store.dart';
+import '../../../services/api_services.dart';
 import '../../widgets/text_format/text_widget.dart';
 import '../../widgets/home_page/featured_product_catalog_tile.dart';
 import '../../widgets/home_page/product_catalog_tile.dart';
@@ -17,7 +18,10 @@ class HomePage extends StatelessWidget {
     TextEditingController _searchController = TextEditingController();
     return Scaffold(
       backgroundColor: AppPallete.background,
-      appBar: SearchBarAndCart(title: SearchBarWidget(controller: _searchController,)),
+      appBar: SearchBarAndCart(
+          title: SearchBarWidget(
+        controller: _searchController,
+      )),
       body: _buildBody(context),
     );
   }
@@ -27,7 +31,7 @@ class HomePage extends StatelessWidget {
       child: Column(
         children: [
           _buildProductCatalog(),
-          _buildFeaturedProductCatalog(context),
+          _buildListViewFeaturedProductCatalog(context),
         ],
       ),
     );
@@ -44,74 +48,117 @@ class HomePage extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(left: elementSpacing),
-          child: _buildListViewProductCatalog(),
+          child: buildListViewProductCatalog(),
         ),
       ],
     );
   }
 
-  _buildListViewProductCatalog() {
-    Store store = Store();
-    List<SmartPhone> smartPhones =
-        store.getFirstProductOfEachCategory(store.getAllSmartPhones);
-    List<String> categories = store.getSmartPhoneCategoriesAsStringList();
+  Widget buildListViewProductCatalog() {
+    ApiServices api = ApiServices();
+    final brands = api.getBrands();
+    return FutureBuilder<List<BrandModel>?>(
+      future: brands,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
 
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: smartPhones.length,
-        itemBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.only(right: elementSpacing),
-          child: ProductCatalogWidget(
-            imagePATH: smartPhones[index].imagePATH,
-            title: categories[index],
-            smartPhoneCategory:
-                store.getSmartPhonesByCategory(smartPhones[index].category),
-          ),
-        ),
-      ),
-    );
-  }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 100,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
 
-  _buildFeaturedProductCatalog(BuildContext context) {
-    return Column(
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(elementSpacing),
-          child: Row(
-            children: [
-              HeaderTextWidget(text: 'Sản phẩm nổi bật 🔥'),
-            ],
+        final brands = snapshot.data!;
+        return SizedBox(
+          height: 100,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: brands.length,
+            itemBuilder: (context, index) => Padding(
+              padding: const EdgeInsets.only(right: elementSpacing),
+              child: ProductCatalogWidget(
+                imagePATH: brands[index].avatarLink,
+                title: brands[index].name ?? '',
+                brandId: brands[index].id,
+              ),
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: elementSpacing),
-          child: _buildListViewFeaturedProductCatalog(context),
-        ),
-      ],
+        );
+      },
     );
   }
 
   _buildListViewFeaturedProductCatalog(BuildContext context) {
+    ApiServices api = ApiServices();
+    final items = api.getItemsByProductLine(name: 'samsung');
     double heightScreen = MediaQuery.of(context).size.height;
     double heightCard = heightScreen * 0.5;
-    double popularPoint = 4.5;
-    Store store = Store();
-    List<SmartPhone> popularSmartPhones =
-        store.getSmartPhonesPopular(popularPoint, store.getAllSmartPhones);
 
-    return SizedBox(
-      height: heightCard,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: popularSmartPhones.length,
-        itemBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.only(right: elementSpacing),
-          child: FeaturedProductCatalogWidget(
-              smartPhone: popularSmartPhones[index]),
-        ),
-      ),
+    return FutureBuilder<List<ProductDetailModel>?>(
+      future: items,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(elementSpacing),
+                child: Row(
+                  children: [
+                    HeaderTextWidget(text: 'Sản phẩm nổi bật 🔥'),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: elementSpacing),
+                child: SizedBox(
+                  height: heightCard,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+        final items = snapshot.data!;
+        return Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(elementSpacing),
+              child: Row(
+                children: [
+                  HeaderTextWidget(text: 'Sản phẩm nổi bật 🔥'),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: elementSpacing),
+              child: SizedBox(
+                height: heightCard,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: items.length,
+                  itemBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.only(right: elementSpacing),
+                    child: FeaturedProductCatalogWidget(
+                      productDetailModel: items[index],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

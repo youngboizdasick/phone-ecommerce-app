@@ -32,7 +32,6 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: AppPallete.blackColor,
       body: BlocConsumer<LoginBloc, LoginState>(
@@ -42,6 +41,8 @@ class _SignInPageState extends State<SignInPage> {
                 SnackBar(content: DefaultTextWidget(text: state.error)));
           }
           if (state is LoginSuccess) {
+            auth.storeUsername(_usernameController.text.trim());
+            auth.storePwd(_passwordController.text.trim());
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(

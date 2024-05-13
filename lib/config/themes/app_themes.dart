@@ -5,9 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 ThemeData theme() {
   return ThemeData(
-    fontFamily: GoogleFonts.openSans().fontFamily,
+    fontFamily: GoogleFonts.hankenGrotesk().fontFamily,
     appBarTheme: _appBarTheme(),
     inputDecorationTheme: _inputDecorationTheme(),
+    snackBarTheme: _snackBarThemeData(),
   );
 }
 
@@ -38,7 +39,17 @@ InputDecorationTheme _inputDecorationTheme() {
 
 OutlineInputBorder _border(Color? color) {
   return OutlineInputBorder(
-    borderSide: BorderSide(color: color ?? AppPallete.background),
+    borderSide: BorderSide(color: color ?? AppPallete.background, strokeAlign: BorderSide.strokeAlignOutside),
     borderRadius: BorderRadius.circular(radius),
+  );
+}
+
+SnackBarThemeData _snackBarThemeData() {
+  return SnackBarThemeData(
+    backgroundColor: AppPallete.background,
+    contentTextStyle: TextStyle(
+      fontSize: defaultFontSize,
+      fontWeight: FontWeight.bold,
+    )
   );
 }

@@ -14,10 +14,11 @@ class ImageSlide extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // image banner
-        Image.asset(
+        Image.network(
           imagePath,
           scale: 0.8,
           height: heightImageBanner,
+          width: MediaQuery.sizeOf(context).width,
         ),
       ],
     );

@@ -1,16 +1,15 @@
-import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_detail.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/addToCart_button.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
-import '../../../models/smartphone.dart';
-import '../product_detail/product_detail_page.dart';
 import '../../widgets/text_format/text_widget.dart';
 import '../../widgets/text_format/format_price.dart';
-import '../../widgets/rating.dart';
+import '../product_detail/product_detail_page.dart';
 
 class ProductWidget extends StatelessWidget {
-  final SmartPhone smartPhone;
-  const ProductWidget({super.key, required this.smartPhone});
+  final ProductDetailModel productDetailModel;
+  const ProductWidget({super.key, required this.productDetailModel});
 
   @override
   Widget build(BuildContext context) {
@@ -18,65 +17,64 @@ class ProductWidget extends StatelessWidget {
     double widthScreen = MediaQuery.of(context).size.width;
     double widthCard = (widthScreen - elementSpacing * 3) / 2;
     double heightCard = heightScreen * 0.32;
-    return GestureDetector(
-      onTap: () => _onTap(context),
-      child: Container(
-        width: widthCard,
-        decoration: BoxDecoration(
-          color: AppPallete.whiteColor,
-          borderRadius: BorderRadius.circular(radius),
-        ),
-        child: Column(
-          children: [
-            _buildImage(heightCard),
-            _buildTitle(heightCard, widthCard),
-            _buildPrice(heightCard),
-            _buildRatingAndFavorite(heightCard),
-          ],
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+      GestureDetector(
+        onTap: () => _onTap(context),
+        child: Container(
+          width: widthCard,
+          decoration: BoxDecoration(
+            color: AppPallete.whiteColor,
+            borderRadius: BorderRadius.circular(radius),
+          ),
+          child: Column(
+            children: [
+              _buildImage(heightCard),
+              _buildTitle(heightCard, widthCard),
+              _buildPrice(heightCard),
+            ],
+          ),
         ),
       ),
-    );
+      AddToCartButton(productDetailModel: productDetailModel),
+    ]);
   }
 
   _buildImage(double heightCard) {
+    String path;
+    productDetailModel.images!.isEmpty
+        ? path = './assets/images/product_empty.jpg'
+        : path = productDetailModel.images![0].imageUrl!;
     return SizedBox(
-      height: heightCard * 0.6,
-      child: Image.asset(smartPhone.imagePATH),
+      height: heightCard * 0.55,
+      child: path.contains('http')
+          ? Padding(
+              padding: const EdgeInsets.only(top: elementSpacing),
+              child: Image.network(path),
+            )
+          : Image.asset(path),
     );
   }
 
   _buildTitle(double heightCard, double widthCard) {
     return SizedBox(
       width: widthCard * 0.8,
-      height: heightCard * 0.15,
-      child: DefaultTextWidget(text: smartPhone.name),
+      height: heightCard * 0.20,
+      child: TextWidget(
+        text: productDetailModel.name!,
+        fontSize: 18,
+      ),
     );
   }
 
   _buildPrice(double heightCard) {
     return SizedBox(
-      height: heightCard * 0.1,
-      child: FormatPrice(
-        price: smartPhone.price,
-        fontSize: headerFontSize,
-        color: AppPallete.blackColor,
-      ),
-    );
-  }
-
-  _buildRatingAndFavorite(double heightCard) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: elementSpacing),
       height: heightCard * 0.15,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          RatingWidget(rating: smartPhone.rating),
-          const Icon(
-            BootstrapIcons.heart,
-            size: headerFontSize,
-          )
-        ],
+      child: FormatPrice(
+        price: productDetailModel.listPriced!,
+        fontSize: headerFontSize,
+        color: AppPallete.errorColor,
       ),
     );
   }
@@ -85,7 +83,8 @@ class ProductWidget extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProductDetailPage(smartPhone: smartPhone),
+        builder: (context) =>
+            ProductDetailPage(productDetailModel: productDetailModel),
       ),
     );
   }

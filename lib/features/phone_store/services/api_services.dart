@@ -1,10 +1,16 @@
 import 'package:curl_logger_dio_interceptor/curl_logger_dio_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:notification_center/notification_center.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/brand.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/cart_model.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/customer.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_basic.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_detail.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/services/api_urls.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-import '../models/product_intro.dart';
+import '../models/address.dart';
 
 class ApiServices {
   final Dio api = Dio();
@@ -16,7 +22,7 @@ class ApiServices {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           if (!options.path.contains('http')) {
-            options.path = '${ApiUrls().BASE_URL}${options.path}';
+            options.path = '${ApiUrls().IDENTITY_URL}${options.path}';
           }
           options.headers['Authorization'] = 'Bearer $accessToken';
           options.headers['appCode'] = 'RETAIL';
@@ -30,6 +36,7 @@ class ApiServices {
             if (await _storage.containsKey(key: 'refreshToken')) {
               // will throw error below
               await refreshToken();
+              getAndStoreCurrentCartId();
               return handler.resolve(await _retry(error.requestOptions));
             }
           }
@@ -38,9 +45,9 @@ class ApiServices {
       ),
     );
 
-    api.interceptors.add(CurlLoggerDioInterceptor());
+    // api.interceptors.add(CurlLoggerDioInterceptor());
 
-    api.interceptors.add(PrettyDioLogger());
+    // api.interceptors.add(PrettyDioLogger());
   }
 
   Future<void> refreshToken() async {
@@ -52,7 +59,7 @@ class ApiServices {
 
     if (response.statusCode == 200) {
       // successfully got the new access token
-      accessToken = response.data;
+      accessToken = response.data['data']['accessToken'];
     } else {
       // log out user.
       accessToken = null;
@@ -72,25 +79,52 @@ class ApiServices {
   }
 
   Future<void> storeTokens(Map<String, dynamic> data) async {
-    // Lưu trữ access token
     await _storage.write(
         key: 'accessToken', value: data['data']['accessToken']);
-
-    // Lưu trữ refresh token
     await _storage.write(
-      key: 'refreshToken',
-      value: data['data']['refreshToken'],
-    );
+        key: 'refreshToken', value: data['data']['refreshToken']);
   }
 
   Future<String?> getAccessToken() async {
-    print(await _storage.read(key: 'accessToken'));
     return await _storage.read(key: 'accessToken');
   }
 
   Future<String?> getRefreshToken() async {
-    print(await _storage.read(key: 'refreshToken'));
     return await _storage.read(key: 'refreshToken');
+  }
+
+  Future<void> storeUid(String? uid) async {
+    await _storage.write(key: 'uid', value: uid);
+  }
+
+  Future<String?> getUid() async {
+    return await _storage.read(key: 'uid');
+  }
+
+  Future<void> storeUsername(
+    String? username,
+  ) async {
+    await _storage.write(key: 'username', value: username);
+  }
+
+  Future<void> storePwd(String? password) async {
+    await _storage.write(key: 'password', value: password);
+  }
+
+  Future<String?> getUsername() async {
+    return await _storage.read(key: 'username');
+  }
+
+  Future<String?> getPassword() async {
+    return await _storage.read(key: 'password');
+  }
+
+  Future<void> storeCurrentCartId(String? id) async {
+    await _storage.write(key: 'currentCartId', value: id);
+  }
+
+  Future<String?> getCurrentCartId() async {
+    return await _storage.read(key: 'currentCartId');
   }
 
   Future<bool> loginUser(String username, String password) async {
@@ -101,6 +135,7 @@ class ApiServices {
       );
 
       if (response.statusCode == 200) {
+        getAndStoreCurrentCartId();
         storeTokens(response.data);
         return true;
       }
@@ -110,20 +145,420 @@ class ApiServices {
     return false;
   }
 
-  Future<bool> logout() async{
+  // Authentication -------------
+
+  Future<int?> register(String username, String password) async {
+    try {
+      final response = await api.post(
+        ApiUrls().API_REGISTER,
+        data: {'username': username, 'password': password},
+      );
+
+      if (response.statusCode == 200) {
+        return 1;
+      }
+
+      if (response.data['meta']['success'] == false) {
+        return 0;
+      }
+    } catch (e) {
+      print('Register Service Error: $e');
+    }
+    return -1;
+  }
+
+  Future<bool> logout() async {
     await _storage.deleteAll();
     return true;
   }
 
-  Future<ProductIntroModel?> fetchProductDetail(String uuid) async {
+  Future<bool> changePwd(String password) async {
     try {
-      final response = await api.get(ApiUrls().API_DETAIL_PRODUCT + uuid);
-      if (response.statusCode == 200) {
-        return ProductIntroModel.fromJson(response.data);
+      final response = await api.put(
+        ApiUrls().API_CHANGEPWD,
+        data: {'password': password},
+      );
+
+      if (response.data['meta']['success'] == true) {
+        storePwd(password);
+        return true;
       }
     } catch (e) {
-      print(e);
+      print('Change Password Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<List<BrandModel>?> getBrands() async {
+    final url = '${ApiUrls().PRODUCT_URL}/App/Brand';
+    final params = {
+      'page': 1,
+      'size': 10,
+    };
+
+    try {
+      final response = await api.get(url, queryParameters: params);
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> brands = [];
+        for (dynamic brand in response.data['data']) {
+          brands.add(brand);
+        }
+        return BrandModel.fromList(brands);
+      }
+    } catch (e) {
+      print('Error Service: $e');
     }
     return null;
+  }
+
+  Future<List<ProductBasicModel>?> getProductLineByBrand(
+      {String? brandId}) async {
+    final url = '${ApiUrls().PRODUCT_URL}/App/Product';
+    final params = {
+      'brandId': brandId,
+      'page': 1,
+      'size': 10,
+    };
+
+    try {
+      final response = await api.get(url, queryParameters: params);
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> products = [];
+        for (dynamic product in response.data['data']) {
+          products.add(product);
+        }
+        return ProductBasicModel.fromList(products);
+      }
+    } catch (e) {
+      print('Error Service: $e');
+    }
+    return null;
+  }
+
+  Future<List<ProductDetailModel>?> getItemsByProductLine({
+    String? productId,
+    String? productCode,
+    String? name,
+    String? brandId,
+    int? page,
+  }) async {
+    final url = '${ApiUrls().PRODUCT_URL}/App/ProductItem';
+    final params = {
+      'productId': productId,
+      'productCode': productCode,
+      'name': name,
+      'brandId': brandId,
+      'page': page ?? 1,
+      'size': 10,
+    };
+
+    try {
+      final response = await api.get(url, queryParameters: params);
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> products = [];
+        for (dynamic product in response.data['data']) {
+          products.add(product);
+        }
+        return ProductDetailModel.fromList(products);
+      }
+    } catch (e) {
+      print('Error Service: $e');
+    }
+    return null;
+  }
+
+  Future<int> getTotalProductsByLine({
+    String? productId,
+    String? productCode,
+    String? name,
+    String? brandId,
+    int? page,
+  }) async {
+    final url = '${ApiUrls().PRODUCT_URL}/App/ProductItem';
+    final params = {
+      'productId': productId,
+      'productCode': productCode,
+      'name': name,
+      'brandId': brandId,
+      'page': page ?? 1,
+      'size': 10,
+    };
+
+    try {
+      final response = await api.get(url, queryParameters: params);
+      if (response.statusCode == 200) {
+        return response.data['meta']['total'];
+      }
+    } catch (e) {
+      print('Error Service: $e');
+    }
+    return 0;
+  }
+
+  // ------- address
+  Future<List<AddressModel>?> getListProvince() async {
+    final url =
+        '${ApiUrls().URL_8001}${ApiUrls().API_AdministrativeDivision}/Province';
+    try {
+      final response = await api.get(url);
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> provinces = [];
+        for (dynamic province in response.data['data']) {
+          provinces.add(province);
+        }
+        return AddressModel.fromList(provinces);
+      }
+    } catch (e) {
+      print('Province Error Service: $e');
+    }
+    return null;
+  }
+
+  Future<List<AddressModel>?> getListDistrict({
+    required int provinceCode,
+    int? districtCode,
+  }) async {
+    final url =
+        '${ApiUrls().URL_8001}/App/AdministrativeDivision/Administrative';
+    final params = {
+      'provinceCode': provinceCode,
+      'districtCode': districtCode,
+    };
+
+    try {
+      final response = await api.get(url, queryParameters: params);
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> districts = [];
+        for (dynamic district in response.data['data']['districts']) {
+          districts.add(district);
+        }
+        return AddressModel.fromList(districts);
+      }
+    } catch (e) {
+      print('Districts Error Service: $e');
+    }
+    return null;
+  }
+
+  Future<List<AddressModel>?> getListWard({
+    required int provinceCode,
+    required int districtCode,
+  }) async {
+    final url =
+        '${ApiUrls().URL_8001}/App/AdministrativeDivision/Administrative';
+    final params = {
+      'provinceCode': provinceCode,
+      'districtCode': districtCode,
+    };
+
+    try {
+      final response = await api.get(url, queryParameters: params);
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> wards = [];
+        for (dynamic ward in response.data['data']['wards']) {
+          wards.add(ward);
+        }
+        return AddressModel.fromList(wards);
+      }
+    } catch (e) {
+      print('Ward Error Service: $e');
+    }
+    return null;
+  }
+
+  // user -------
+
+  Future<CustomerModel?> getCustomerInformation() async {
+    final url = '${ApiUrls().URL_8001}/App/Customer';
+
+    try {
+      final response = await api.get(url);
+      if (response.statusCode == 200) {
+        CustomerModel customerModel =
+            CustomerModel.fromJson(response.data['data']);
+        storeUid(customerModel.id);
+        return customerModel;
+      }
+    } catch (e) {
+      print('Customer Information Error Service: $e');
+    }
+    return null;
+  }
+
+  Future<bool> changeInformation({
+    required String? name,
+    required String? email,
+    required int? birthday,
+  }) async {
+    final url = '${ApiUrls().URL_8001}/App/Customer';
+    try {
+      final response = await api.put(
+        url,
+        data: {'name': name, 'email': email, 'birthday': birthday},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('Change Password Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> addPhone(
+      {required bool? isPrimary, required String? phoneNumber}) async {
+    final url = '${ApiUrls().URL_8001}/App/Customer/CustomerPhone';
+    try {
+      final response = await api.post(
+        url,
+        data: {'isPrimary': isPrimary, 'phoneNumber': phoneNumber},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('Add Phone Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> addAddress({
+    required String? address,
+    required bool? isPrimary,
+    required int? wardCode,
+    required int? districtCode,
+    required int? provinceCode,
+  }) async {
+    final url = '${ApiUrls().URL_8001}/App/Customer/CustomerAddress';
+    try {
+      final response = await api.post(
+        url,
+        data: {
+          'address': address,
+          'isPrimary': isPrimary,
+          'wardCode': wardCode,
+          'districtCode': districtCode,
+          'provinceCode': provinceCode,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('Add Phone Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> changeAddress({
+    required String? id,
+    required String? address,
+    required bool? isPrimary,
+    required int? wardCode,
+    required int? districtCode,
+    required int? provinceCode,
+  }) async {
+    final url = '${ApiUrls().URL_8001}/App/Customer/CustomerAddress/$id';
+    try {
+      final response = await api.put(
+        url,
+        data: {
+          'address': address,
+          'isPrimary': isPrimary,
+          'wardCode': wardCode,
+          'districtCode': districtCode,
+          'provinceCode': provinceCode,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('changeAddress Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> changePhone({
+    required String? id,
+    required String? phoneNumber,
+    required bool? isPrimary,
+  }) async {
+    final url = '${ApiUrls().URL_8001}/App/Customer/CustomerPhone/$id';
+    try {
+      final response = await api.put(
+        url,
+        data: {'phoneNumber': phoneNumber, 'isPrimary': isPrimary},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('changePhone Service Error: $e');
+    }
+    return false;
+  }
+
+  // cart ------------
+
+  Future<bool> postProductToCart({
+    required String? productItemId,
+    required String? productItemImageUrl,
+    required int? price,
+  }) async {
+    final url = '${ApiUrls().URL_8001}/App/Cart/Product';
+    final currentCartId = await getCurrentCartId();
+    try {
+      final response = await api.post(
+        url,
+        data: {
+          'cardId': currentCartId,
+          'productItemId': productItemId,
+          'productItemImageUrl': productItemImageUrl,
+          'quantity': 1,
+          'price': price,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('putProductToCart Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<CartModelApi?> getCurrentCart() async {
+    final url = '${ApiUrls().URL_8001}/App/Cart';
+    try {
+      final response = await api.get(url);
+
+      if (response.statusCode == 200) {
+        return CartModelApi.fromJson(response.data['data']);
+      }
+    } catch (e) {
+      print('getCurrentCart Service Error: $e');
+    }
+    return null;
+  }
+
+  Future<void> getAndStoreCurrentCartId() async {
+    final url = '${ApiUrls().URL_8001}/App/Cart';
+    try {
+      final response = await api.get(url);
+
+      if (response.statusCode == 200) {
+        storeCurrentCartId(response.data['data']['id']);
+        NotificationCenter().notify<int>('currentCartLength', data: response.data['data']['cartProducts'].length);
+      }
+    } catch (e) {
+      print('getAndStoreCurrentCartId Service Error: $e');
+    }
   }
 }
