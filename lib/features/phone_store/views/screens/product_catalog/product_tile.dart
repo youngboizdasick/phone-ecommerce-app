@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/models/product_detail.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_item.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/addToCart_button.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
@@ -8,7 +8,7 @@ import '../../widgets/text_format/format_price.dart';
 import '../product_detail/product_detail_page.dart';
 
 class ProductWidget extends StatelessWidget {
-  final ProductDetailModel productDetailModel;
+  final ProductItemModel productDetailModel;
   const ProductWidget({super.key, required this.productDetailModel});
 
   @override

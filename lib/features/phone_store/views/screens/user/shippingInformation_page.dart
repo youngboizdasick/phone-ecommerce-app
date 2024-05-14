@@ -19,6 +19,7 @@ class ShippingInformationPage extends StatefulWidget {
 }
 
 class _ShippingInformationPageState extends State<ShippingInformationPage> {
+
   @override
   Widget build(BuildContext context) {
     double widthSize = MediaQuery.of(context).size.width;

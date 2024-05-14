@@ -21,7 +21,6 @@ class TextWidget extends StatelessWidget {
       text,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
-      textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: fontSize ?? defaultFontSize,
         fontWeight: isBold == true ? FontWeight.bold : FontWeight.w500,

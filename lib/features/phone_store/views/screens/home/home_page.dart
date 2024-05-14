@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/models/brand.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/models/product_detail.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_item.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_custom.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
@@ -95,11 +95,11 @@ class HomePage extends StatelessWidget {
 
   _buildListViewFeaturedProductCatalog(BuildContext context) {
     ApiServices api = ApiServices();
-    final items = api.getItemsByProductLine(name: 'samsung');
+    final items = api.getItemsByProductLine(name: 'iphone');
     double heightScreen = MediaQuery.of(context).size.height;
     double heightCard = heightScreen * 0.5;
 
-    return FutureBuilder<List<ProductDetailModel>?>(
+    return FutureBuilder<List<ProductItemModel>?>(
       future: items,
       builder: (context, snapshot) {
         if (snapshot.hasError) {

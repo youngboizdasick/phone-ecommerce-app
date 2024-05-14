@@ -1,10 +1,10 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/models/product_detail.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_custom.dart';
 import '../../../../../../config/themes/app_pallete.dart';
 import '../../../../../core/constants/constants.dart';
+import '../../../models/product_item.dart';
 import '../../widgets/text_format/text_widget.dart';
 import '../../widgets/text_format/format_price.dart';
 import '../../widgets/product_detail/image_slider/image_slide_tile.dart';
@@ -12,7 +12,7 @@ import '../../widgets/product_detail/image_slider/images_slider.dart';
 import '../../widgets/rating.dart';
 
 class ProductDetailPage extends StatefulWidget {
-  final ProductDetailModel productDetailModel;
+  final ProductItemModel productDetailModel;
   const ProductDetailPage({super.key, required this.productDetailModel});
 
   @override
@@ -31,7 +31,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         extendBodyBehindAppBar: true,
         appBar: const BackButtonAndCartButton(),
         body: _buildBody(),
-        bottomNavigationBar: _buildBottomNavBar(price), //BottomNavBarProductDetailWidget(price: price),
+        bottomNavigationBar: _buildBottomNavBar(
+            price), //BottomNavBarProductDetailWidget(price: price),
       ),
     );
   }
@@ -55,9 +56,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.41,
       decoration: const BoxDecoration(
-        color: AppPallete.background,
-        border: Border(bottom: BorderSide(color: AppPallete.background))
-      ),
+          color: AppPallete.background,
+          border: Border(bottom: BorderSide(color: AppPallete.background))),
       child: Stack(
         alignment: Alignment.centerRight,
         children: [
@@ -150,7 +150,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
             child: Padding(
               padding: const EdgeInsets.only(right: elementSpacing),
-              child: RatingWidget(rating: widget.productDetailModel.rateCount!.toDouble()),
+              child: RatingWidget(
+                  rating: widget.productDetailModel.rateCount!.toDouble()),
             ),
           ),
 
@@ -225,17 +226,33 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
         ),
         Container(
-          width:
-              MediaQuery.of(context).size.width - elementSpacing * 2,
+          width: MediaQuery.of(context).size.width - elementSpacing * 2,
           decoration: BoxDecoration(
             border: Border.all(color: AppPallete.background),
             borderRadius: BorderRadius.circular(radius),
           ),
           child: Padding(
             padding: const EdgeInsets.all(elementSpacing),
-            child: Text(
-              widget.productDetailModel.attributes.toString(),
-              style: const TextStyle(fontSize: defaultFontSize),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Màn hình: ${widget.productDetailModel.productItemAttributes?[0].fieldValue.toString()}',
+                  style: const TextStyle(fontSize: defaultFontSize),
+                ),
+                Text(
+                  'Màu ${widget.productDetailModel.productItemAttributes?[1].fieldValue.toString()}',
+                  style: const TextStyle(fontSize: defaultFontSize),
+                ),
+                Text(
+                  'Ram: ${widget.productDetailModel.productItemAttributes?[2].fieldValue.toString()}',
+                  style: const TextStyle(fontSize: defaultFontSize),
+                ),
+                Text(
+                  'Bộ nhớ: ${widget.productDetailModel.productItemAttributes?[3].fieldValue.toString()}',
+                  style: const TextStyle(fontSize: defaultFontSize),
+                ),
+              ],
             ),
           ),
         )

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/models/product_detail.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_item.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/addToCart_button.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart';
 import '../../../../../../config/themes/app_pallete.dart';
@@ -9,8 +9,9 @@ import '../text_format/format_price.dart';
 import '../rating.dart';
 
 class FeaturedProductCatalogWidget extends StatelessWidget {
-  final ProductDetailModel productDetailModel;
-  const FeaturedProductCatalogWidget({super.key, required this.productDetailModel});
+  final ProductItemModel productDetailModel;
+  const FeaturedProductCatalogWidget(
+      {super.key, required this.productDetailModel});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,8 @@ class FeaturedProductCatalogWidget extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductDetailPage(productDetailModel: productDetailModel),
+            builder: (context) =>
+                ProductDetailPage(productDetailModel: productDetailModel),
           ),
         );
       },
@@ -92,9 +94,16 @@ class FeaturedProductCatalogWidget extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(elementSpacing),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                productDetailModel.attributes.toString(),
+                'Màn hình: ${productDetailModel.productItemAttributes?[0].fieldValue.toString()}, Màu ${productDetailModel.productItemAttributes?[1].fieldValue.toString()}',
+                softWrap: true,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                '${productDetailModel.productItemAttributes?[2].fieldKey.toString()}: ${productDetailModel.productItemAttributes?[2].fieldValue.toString()}GB, Bộ nhớ: ${productDetailModel.productItemAttributes?[3].fieldValue.toString()}',
                 softWrap: true,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -114,8 +123,7 @@ class FeaturedProductCatalogWidget extends StatelessWidget {
       height: heightPrice,
       child: Padding(
         padding: const EdgeInsets.symmetric(
-            horizontal: elementSpacing * 2,
-            vertical: elementSpacing),
+            horizontal: elementSpacing * 2, vertical: elementSpacing),
         child: Row(
           children: [
             FormatPrice(

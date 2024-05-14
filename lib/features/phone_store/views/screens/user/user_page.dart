@@ -1,7 +1,7 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/changePassword_page.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/historyPayment_page.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/history_payment/historyPayment_page.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/shippingInformation_page.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/userInfor_page.dart';
 import '../../../../../config/themes/app_pallete.dart';

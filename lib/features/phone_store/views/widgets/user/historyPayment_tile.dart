@@ -20,18 +20,33 @@ class _HistoryPaymentWidgetState extends State<HistoryPaymentWidget> {
   double rating = 0;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AppPallete.background),
-        ),
+    return Padding(
+      padding: EdgeInsets.only(
+        top: elementSpacing,
+        left: elementSpacing,
+        right: elementSpacing,
       ),
-      child: Column(
-        children: [
-          _buildDetail(),
-          _buildStatus(),
-          _buildRating(rating, canRate),
-        ],
+      child: GestureDetector(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: AppPallete.background),
+            borderRadius: const BorderRadius.all(Radius.circular(radius)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: elementSpacing,
+                  left: elementSpacing,
+                  bottom: elementSpacing,
+                ),
+                child: HeaderTextWidget(text: 'Mã đơn hàng #1'),
+              ),
+              _buildShippingInformation(),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -39,9 +54,7 @@ class _HistoryPaymentWidgetState extends State<HistoryPaymentWidget> {
   _buildDetail() {
     return Container(
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AppPallete.background),
-        ),
+        border: Border(bottom: BorderSide(color: AppPallete.background)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: elementSpacing),
@@ -92,26 +105,44 @@ class _HistoryPaymentWidgetState extends State<HistoryPaymentWidget> {
     );
   }
 
-  _buildStatus() {
+  _buildShippingInformation() {
     return Container(
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: AppPallete.background),
+          top: BorderSide(color: AppPallete.background),
         ),
       ),
-      child: Row(
+      child: Column(
         children: [
-          // icon
-          IconButtonWidget(
-            icon: BootstrapIcons.truck,
-            color: AppPallete.successColor,
-            size: 20,
+          Row(
+            children: [
+              // icon
+              IconButtonWidget(icon: BootstrapIcons.telephone, size: 20),
+              // title
+              TextWidget(text: '0123456789'),
+            ],
           ),
-          // title
-          TextWidget(
-            text: 'Đơn hàng được giao thành công',
-            color: AppPallete.successColor,
-          )
+          Row(
+            children: [
+              // icon
+              IconButtonWidget(icon: BootstrapIcons.geo_alt, size: 20),
+              // title
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: TextWidget(
+                    text:
+                        'So 58, Duong AA, Phuong Tay Thanh, Quan Binh Tan, Thanh pho Ho Chi Minh'),
+              )
+            ],
+          ),
+          Row(
+            children: [
+              IconButtonWidget(icon: BootstrapIcons.cart_check, size: 20),
+              TextWidget(text: 'Thanh toán: '),
+              FormatPrice(price: 99999999, color: AppPallete.errorColor,)
+            ],
+          ),
         ],
       ),
     );

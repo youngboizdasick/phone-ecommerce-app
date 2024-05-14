@@ -105,7 +105,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                 _buildPhoneField(primaryPhone),
                 _buildAddressField(primaryAdress),
                 // save button
-                const ButtonWidget(buttonText: 'Lưu'),
+                ButtonWidget(buttonText: 'Lưu', onAccountBtnPressed: () => _onSavedInformation(context),),
               ],
             ),
           ),

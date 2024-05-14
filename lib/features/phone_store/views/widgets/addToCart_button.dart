@@ -1,14 +1,14 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/models/product_detail.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_item.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/services/api_services.dart';
 
 import '../../../../config/themes/app_pallete.dart';
 import '../../../../core/constants/constants.dart';
 
 class AddToCartButton extends StatelessWidget {
-  final ProductDetailModel productDetailModel;
+  final ProductItemModel productDetailModel;
   final double? size;
   const AddToCartButton(
       {super.key, this.size, required this.productDetailModel});
@@ -39,10 +39,12 @@ class AddToCartButton extends StatelessWidget {
   _onTapPutProductToCart() {
     ApiServices apiServices = ApiServices();
     final isSuccess = apiServices.postProductToCart(
-      productItemId: productDetailModel.productId,
+      productItemId: productDetailModel.id,
+      productItemName: productDetailModel.name,
       productItemImageUrl: productDetailModel.images?[0].imageUrl,
       price: productDetailModel.listPriced,
     );
+    print(productDetailModel.name);
     isSuccess.then(
       (value) => value
           ? NotificationCenter().notify<int>('putProductToCart', data: 1)

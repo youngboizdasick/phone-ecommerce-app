@@ -3,19 +3,21 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/models/brand.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/models/cart_model.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/cart.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/models/customer.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/models/product_basic.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/models/product_detail.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_item.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/services/api_urls.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../models/address.dart';
+import '../models/cart_product.dart';
 
 class ApiServices {
   final Dio api = Dio();
   String? accessToken;
   final _storage = const FlutterSecureStorage();
+  static List<Map<String, dynamic>> cartProducts = [];
 
   ApiServices() {
     api.interceptors.add(
@@ -45,7 +47,7 @@ class ApiServices {
       ),
     );
 
-    // api.interceptors.add(CurlLoggerDioInterceptor());
+    api.interceptors.add(CurlLoggerDioInterceptor());
 
     // api.interceptors.add(PrettyDioLogger());
   }
@@ -125,6 +127,22 @@ class ApiServices {
 
   Future<String?> getCurrentCartId() async {
     return await _storage.read(key: 'currentCartId');
+  }
+
+  Future<void> storeAddressId(String? id) async {
+    await _storage.write(key: 'addressId', value: id);
+  }
+
+  Future<String?> getAddressId() async {
+    return await _storage.read(key: 'addressId');
+  }
+
+  Future<void> storePhoneId(String? id) async {
+    await _storage.write(key: 'phoneId', value: id);
+  }
+
+  Future<String?> getPhoneId() async {
+    return await _storage.read(key: 'phoneId');
   }
 
   Future<bool> loginUser(String username, String password) async {
@@ -235,7 +253,7 @@ class ApiServices {
     return null;
   }
 
-  Future<List<ProductDetailModel>?> getItemsByProductLine({
+  Future<List<ProductItemModel>?> getItemsByProductLine({
     String? productId,
     String? productCode,
     String? name,
@@ -259,7 +277,7 @@ class ApiServices {
         for (dynamic product in response.data['data']) {
           products.add(product);
         }
-        return ProductDetailModel.fromList(products);
+        return ProductItemModel.fromList(products);
       }
     } catch (e) {
       print('Error Service: $e');
@@ -416,6 +434,7 @@ class ApiServices {
       );
 
       if (response.statusCode == 200) {
+        if (isPrimary == true) storePhoneId(response.data['data']);
         return true;
       }
     } catch (e) {
@@ -445,6 +464,7 @@ class ApiServices {
       );
 
       if (response.statusCode == 200) {
+        if (isPrimary == true) storeAddressId(response.data['data']);
         return true;
       }
     } catch (e) {
@@ -462,6 +482,7 @@ class ApiServices {
     required int? provinceCode,
   }) async {
     final url = '${ApiUrls().URL_8001}/App/Customer/CustomerAddress/$id';
+    if (isPrimary == true) storeAddressId(id);
     try {
       final response = await api.put(
         url,
@@ -489,6 +510,7 @@ class ApiServices {
     required bool? isPrimary,
   }) async {
     final url = '${ApiUrls().URL_8001}/App/Customer/CustomerPhone/$id';
+    if (isPrimary == true) storePhoneId(id);
     try {
       final response = await api.put(
         url,
@@ -508,6 +530,7 @@ class ApiServices {
 
   Future<bool> postProductToCart({
     required String? productItemId,
+    required String? productItemName,
     required String? productItemImageUrl,
     required int? price,
   }) async {
@@ -519,6 +542,7 @@ class ApiServices {
         data: {
           'cardId': currentCartId,
           'productItemId': productItemId,
+          'productItemName': productItemName,
           'productItemImageUrl': productItemImageUrl,
           'quantity': 1,
           'price': price,
@@ -534,13 +558,24 @@ class ApiServices {
     return false;
   }
 
-  Future<CartModelApi?> getCurrentCart() async {
+  Future<CartModel?> getCurrentCart() async {
+    cartProducts.clear();
     final url = '${ApiUrls().URL_8001}/App/Cart';
     try {
       final response = await api.get(url);
 
       if (response.statusCode == 200) {
-        return CartModelApi.fromJson(response.data['data']);
+        CartModel cartModel = CartModel.fromJson(response.data['data']);
+        for (CartProducts cartProduct in cartModel.cartProducts!) {
+          CartProduct product = CartProduct();
+          product.productItemId = cartProduct.productItemId;
+          product.productItemImageUrl = cartProduct.productItemImageUrl;
+          product.productItemName = cartProduct.productItemName;
+          product.quantity = cartProduct.quantity;
+          product.price = cartProduct.price;
+          cartProducts.add(product.toJson());
+        }
+        return cartModel;
       }
     } catch (e) {
       print('getCurrentCart Service Error: $e');
@@ -555,10 +590,126 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         storeCurrentCartId(response.data['data']['id']);
-        NotificationCenter().notify<int>('currentCartLength', data: response.data['data']['cartProducts'].length);
+        NotificationCenter().notify<int>('currentCartLength',
+            data: response.data['data']['cartProducts'].length);
       }
     } catch (e) {
       print('getAndStoreCurrentCartId Service Error: $e');
     }
+  }
+
+  Future<bool> delProductToCart({
+    required String? id,
+  }) async {
+    final url = '${ApiUrls().URL_8001}/App/Cart/Product/$id';
+    try {
+      final response = await api.delete(url);
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('delProductToCart Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> payment() async {
+    final url = '${ApiUrls().URL_8001}/App/Cart/Payment';
+    String? addressId = await getAddressId();
+    String? phoneId = await getPhoneId();
+    print(addressId);
+    if (addressId.toString() == 'null' || phoneId.toString() == 'null') {
+      return false;
+    }
+    try {
+      // for (Map<String, dynamic> cartProduct in cartProducts) {
+      //   if (await checkSerialProductItem(id: cartProduct['productItemId']) ==
+      //       false) {
+      //     print('checkSerialProductItem ${cartProduct['productItemId']}');
+      //     return false;
+      //   }
+      // }
+      final response = await api.post(
+        url,
+        data: {
+          'customerAddressId': addressId,
+          'customerPhoneId': phoneId,
+          'cartProducts': cartProducts
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('getCurrentCart Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> updateProduct({
+    required String? id,
+    required int? quantity,
+    required int? price,
+  }) async {
+    final url = '${ApiUrls().URL_8001}/App/Cart/Product/$id';
+    try {
+      final response = await api.put(
+        url,
+        data: {'quantity': quantity, 'price': price},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('getCurrentCart Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> checkSerialProductItem({required String? id}) async {
+    final url = '${ApiUrls().PRODUCT_URL}/App/ProductItemSerial';
+    try {
+      final response = await api.post(url, data: {'data': id});
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('checkSerialProductItem Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> cancelCart({required String? id}) async {
+    final url = '${ApiUrls().URL_8001}/App/Cart/$id';
+    try {
+      final response = await api.put(url,
+          data: {'workflowStateId': '5744eeba-9457-4005-a5ec-a8d6354e74f8'});
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print('cancelCart Service Error: $e');
+    }
+    return false;
+  }
+
+  Future<List<OldCartModel>?> getHistoryCart() async {
+    final url = '${ApiUrls().URL_8001}/App/Cart/History';
+    try {
+      final response = await api.get(url);
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> historyCarts = [];
+        for (dynamic cart in response.data['data']) {
+          historyCarts.add(cart);
+        }
+        return OldCartModel.fromList(historyCarts);
+      }
+    } catch (e) {
+      print('getHistoryCart Service Error: $e');
+    }
+    return null;
   }
 }

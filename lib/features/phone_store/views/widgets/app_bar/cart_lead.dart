@@ -25,7 +25,11 @@ class _CartLeadViewState extends State<CartLeadView> {
               children: [
                 IconButtonWidget(
                   icon: BootstrapIcons.bag,
-                  onPressed: () => Navigator.pushNamed(context, '/CartPage'),
+                  onPressed: () => {
+                    NotificationCenter()
+                        .notify<bool>('cartItemSelected', data: true),
+                    Navigator.pushNamed(context, '/CartPage')
+                  },
                 ),
                 Container(
                   decoration: const BoxDecoration(

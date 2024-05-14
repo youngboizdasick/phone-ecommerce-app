@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:phone_store_clean_architectutre/config/themes/app_pallete.dart';
-
+import 'package:phone_store_clean_architectutre/features/phone_store/models/product_item.dart';
 import '../../../../../core/constants/constants.dart';
-import '../../../models/product_detail.dart';
 import '../../../services/api_services.dart';
 import '../../widgets/text_format/text_widget.dart';
 import 'product_tile.dart';
@@ -35,7 +34,7 @@ class _ProductViewState extends State<ProductView> {
 
   _buildGridView(BuildContext context) {
     ApiServices api = ApiServices();
-    Future<List<ProductDetailModel>?> items;
+    Future<List<ProductItemModel>?> items;
     Future<int> total;
     paramGetItemsCatalog!.length > 3
         ? {
@@ -51,7 +50,7 @@ class _ProductViewState extends State<ProductView> {
             total =
                 api.getTotalProductsByLine(productCode: paramGetItemsCatalog)
           };
-    return FutureBuilder<List<ProductDetailModel>?>(
+    return FutureBuilder<List<ProductItemModel>?>(
       future: items,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
