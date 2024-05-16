@@ -17,9 +17,9 @@
 
 - **Browse Products / Filter Products / View Product Details**
 <div align="center">
-    <img src="./assets/browse_product.png" alt="Browse Products Screen" width="33%">
-    <img src="./assets/filter_product.png" alt="Filter Products Screen" width="33%">
-    <img src="./assets/product_detail.png" alt="View Product Details Screen" width="33%">
+    <img src="./assets/browse_product.png" alt="Browse Products Screen" width="45%">
+    <img src="./assets/filter_product.png" alt="Filter Products Screen" width="45%">
+    <img src="./assets/product_detail.png" alt="View Product Details Screen" width="45%">
 </div>
 
 - **Cart / CRUD Cart / Payment History**
