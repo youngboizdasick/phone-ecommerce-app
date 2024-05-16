@@ -10,7 +10,7 @@
 
 ## Application Screens
 - **Login / Register**
-<div>
+<div align="center">
     <img src="./assets/login.png" alt="Login Screen" width="45%">
     <img src="./assets/register.png" alt="Register Screen" width="45%">
 </div>
