@@ -10,7 +10,8 @@
 
 ## Application Screens
 - **Login / Register**
-![alt text](./assets/login.png= 100x200), ![alt text](./assets/login.png)
+<img src="./assets/login.png" alt="Login Image" width="100" height="200">
+![alt text](./assets/login.png)
 - **Browse Products / Filter Products / View Product Details**
 - **Cart / CRUD Cart / Payment History**
 - **User / Change Password / Create & Update Shipping Information**
