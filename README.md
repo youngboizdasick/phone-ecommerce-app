@@ -11,8 +11,8 @@
 ## Application Screens
 - **Login / Register**
 <div align="center">
-    <img src="./assets/login.png" alt="Login Screen" width="45%">
-    <img src="./assets/register.png" alt="Register Screen" width="45%">
+    <img src="./assets/login.png" alt="Login Screen" width="45%" height="400">
+    <img src="./assets/register.png" alt="Register Screen" width="45%" height="400">
 </div>
 - **Browse Products / Filter Products / View Product Details**
 - **Cart / CRUD Cart / Payment History**
