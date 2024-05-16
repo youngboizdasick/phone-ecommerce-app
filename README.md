@@ -26,6 +26,7 @@
 <div align="center">
     <img src="./assets/cart.png" alt="Cart Screen" width="45%">
     <img src="./assets/history_payment.png" alt="Payment History Screen" width="45%">
+    <img src="./assets/history_cart_detail.png" alt="History Cart Detail Screen" width="45%">
 </div>
 
 - **User / Change Password / Create & Update Shipping Information**
