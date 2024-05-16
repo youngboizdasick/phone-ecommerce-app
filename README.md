@@ -11,8 +11,8 @@
 ## Application Screens
 - **Login / Register**
 <div style="display: flex; flex-wrap: wrap;">
-    <img src="./assets/login.png" alt="Login Screen" style="flex: 1; min-width: 100px; height: auto; margin: 5px;">
-    <img src="./assets/register.png" alt="Register Screen" style="flex: 1; min-width: 100px; height: auto; margin: 5px;">
+    <img src="./assets/login.png" alt="Login Screen" style="min-width: 100px; height: auto; margin: 5px;">
+    <img src="./assets/register.png" alt="Register Screen" style="min-width: 100px; height: auto; margin: 5px;">
 </div>
 - **Browse Products / Filter Products / View Product Details**
 - **Cart / CRUD Cart / Payment History**
