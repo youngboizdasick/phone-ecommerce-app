@@ -4,6 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:phone_store_clean_architectutre/config/themes/app_pallete.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/models/cart.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/services/api_services.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/app_bar/app_bar_custom.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart';
 
@@ -29,24 +30,26 @@ class _HistoryPaymentDetailState extends State<HistoryPaymentDetail> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildShippingInformation(),
             Padding(
-              padding: const EdgeInsets.all(elementSpacing),
-              child: TextWidget(text: 'Thông tin sản phẩm', fontSize: 18),
+              padding: const EdgeInsets.only(
+                top: elementSpacing,
+                left: elementSpacing,
+                right: elementSpacing,
+              ),
+              child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(elementSpacing),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: AppPallete.successColor),
+                      borderRadius: BorderRadius.circular(radius),
+                      color: AppPallete.successColor.withOpacity(0.15)),
+                  child: TextWidget(
+                      text:
+                          'Trạng thái hiện tại: ${widget.oldCartModel.workflowState?.name.toString()}',
+                      fontSize: 18)),
             ),
-            ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: widget.oldCartModel.cartProducts!.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    _buildDetail(widget.oldCartModel.cartProducts![index]),
-                    _buildRating(rating, canRate!)
-                  ],
-                );
-              },
-            ),
+            _buildShippingInformation(),
+            _buildProductItem(),
           ],
         ),
       ),
@@ -83,7 +86,9 @@ class _HistoryPaymentDetailState extends State<HistoryPaymentDetail> {
                       Border(bottom: BorderSide(color: AppPallete.background))),
               child: Padding(
                 padding: const EdgeInsets.only(
-                    top: elementSpacing, left: elementSpacing, bottom: elementSpacing),
+                    top: elementSpacing,
+                    left: elementSpacing,
+                    bottom: elementSpacing),
                 child:
                     TextWidget(text: 'Thông tin người nhận hàng', fontSize: 18),
               ),
@@ -103,6 +108,50 @@ class _HistoryPaymentDetailState extends State<HistoryPaymentDetail> {
                         .toString()),
               )
             ])
+          ],
+        ),
+      ),
+    );
+  }
+
+  _buildProductItem() {
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: elementSpacing,
+        left: elementSpacing,
+        right: elementSpacing,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: AppPallete.background),
+          borderRadius: BorderRadius.circular(radius),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  border:
+                      Border(bottom: BorderSide(color: AppPallete.background))),
+              child: Padding(
+                padding: const EdgeInsets.all(elementSpacing),
+                child: TextWidget(text: 'Thông tin sản phẩm', fontSize: 18),
+              ),
+            ),
+            ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: widget.oldCartModel.cartProducts!.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    _buildDetail(widget.oldCartModel.cartProducts![index]),
+                    _buildRating(rating, canRate!,
+                        widget.oldCartModel.cartProducts![index])
+                  ],
+                );
+              },
+            )
           ],
         ),
       ),
@@ -163,7 +212,7 @@ class _HistoryPaymentDetailState extends State<HistoryPaymentDetail> {
     );
   }
 
-  _buildRating(double rating, bool canRate) {
+  _buildRating(double rating, bool canRate, CartProducts cartProducts) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: elementSpacing),
       child: Row(
@@ -203,6 +252,8 @@ class _HistoryPaymentDetailState extends State<HistoryPaymentDetail> {
                       rating = newRating;
                       canRate = false;
                       Future.delayed(Duration(seconds: 2), () {
+                        _onTapRating(
+                            rating.toInt(), cartProducts.productItemId);
                         NotificationCenter()
                             .notify<bool>('isRatedProduct', data: canRate);
                       });
@@ -212,6 +263,17 @@ class _HistoryPaymentDetailState extends State<HistoryPaymentDetail> {
         ],
       ),
     );
+  }
+
+  _onTapRating(int? ratingStar, String? productItemId) async {
+    ApiServices apiServices = ApiServices();
+    bool isSuccess = await apiServices.rating(
+        ratingStar: ratingStar, productItemId: productItemId);
+    isSuccess
+        ? setState(() {})
+        : ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Center(
+                child: DefaultTextWidget(text: 'Có lỗi xảy ra. Thử lại sau'))));
   }
 
   double rating = 0;

@@ -87,7 +87,7 @@ class _CartPageState extends State<CartPage> {
       ),
       child: Row(
         children: [
-          _buildTotalPrice(price),
+          // _buildTotalPrice(price),
           _buildPaymentButton(context),
         ],
       ),

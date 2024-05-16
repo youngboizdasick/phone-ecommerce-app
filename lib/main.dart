@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/user_page.dart';
 import 'app_bloc_observer.dart';
 import 'config/themes/app_themes.dart';
 import 'features/phone_store/blocs/login/login_bloc.dart';

@@ -1,4 +1,3 @@
-import 'package:curl_logger_dio_interceptor/curl_logger_dio_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notification_center/notification_center.dart';
@@ -8,8 +7,7 @@ import 'package:phone_store_clean_architectutre/features/phone_store/models/cust
 import 'package:phone_store_clean_architectutre/features/phone_store/models/product_basic.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/models/product_item.dart';
 import 'package:phone_store_clean_architectutre/features/phone_store/services/api_urls.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-
+import 'package:phone_store_clean_architectutre/features/phone_store/services/dio_helper.dart';
 import '../models/address.dart';
 import '../models/cart_product.dart';
 
@@ -53,19 +51,25 @@ class ApiServices {
   }
 
   Future<void> refreshToken() async {
-    final refreshToken = await _storage.read(key: 'refreshToken');
-    final response = await api.post(
-      ApiUrls().API_REFRESH_TOKEN,
-      data: {'refreshToken': refreshToken},
-    );
+    try {
+      final refreshToken = await _storage.read(key: 'refreshToken');
+      final response = await api.post(
+        ApiUrls().API_REFRESH_TOKEN,
+        data: {'refreshToken': refreshToken},
+      );
 
-    if (response.statusCode == 200) {
-      // successfully got the new access token
-      accessToken = response.data['data']['accessToken'];
-    } else {
-      // log out user.
-      accessToken = null;
-      _storage.deleteAll();
+      if (response.statusCode == 200) {
+        // successfully got the new access token
+        accessToken = response.data['data']['accessToken'];
+      } else {
+        // log out user.
+        accessToken = null;
+        _storage.deleteAll();
+      }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
+    } catch (e) {
+      ApiHelper.logUnexpectedError(e);
     }
   }
 
@@ -145,6 +149,8 @@ class ApiServices {
     return await _storage.read(key: 'phoneId');
   }
 
+  // SGU Identity Swagger
+
   Future<bool> loginUser(String username, String password) async {
     try {
       final response = await api.post(
@@ -155,15 +161,31 @@ class ApiServices {
       if (response.statusCode == 200) {
         getAndStoreCurrentCartId();
         storeTokens(response.data);
+        CustomerModel? customerModel = await getCustomerInformation();
+        CustomerAddresses? primaryAddress;
+        for (CustomerAddresses? customerAddresses
+            in customerModel!.customerAddresses!) {
+          if (customerAddresses?.isPrimary == true)
+            primaryAddress = customerAddresses;
+        }
+        CustomerPhones? primaryPhones;
+        for (CustomerPhones? customerPhones in customerModel.customerPhones!) {
+          if (customerPhones?.isPrimary == true) primaryPhones = customerPhones;
+        }
+        storeAddressId(primaryAddress?.id.toString());
+        storePhoneId(primaryPhones?.id.toString());
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print(e);
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
-
-  // Authentication -------------
 
   Future<int?> register(String username, String password) async {
     try {
@@ -172,21 +194,27 @@ class ApiServices {
         data: {'username': username, 'password': password},
       );
 
-      if (response.statusCode == 200) {
-        return 1;
-      }
-
       if (response.data['meta']['success'] == false) {
         return 0;
       }
+
+      if (response.statusCode == 200) {
+        return 1;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return -1;
+      }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Register Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return -1;
   }
 
   Future<bool> logout() async {
-    await _storage.deleteAll();
+    await _storage.delete(key: 'accessToken');
+    await _storage.delete(key: 'refreshToken');
     return true;
   }
 
@@ -200,12 +228,19 @@ class ApiServices {
       if (response.data['meta']['success'] == true) {
         storePwd(password);
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Change Password Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
+
+  // SGU Product Swagger
 
   Future<List<BrandModel>?> getBrands() async {
     final url = '${ApiUrls().PRODUCT_URL}/App/Brand';
@@ -222,15 +257,25 @@ class ApiServices {
           brands.add(brand);
         }
         return BrandModel.fromList(brands);
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return null;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Error Service: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return null;
   }
 
   Future<List<ProductBasicModel>?> getProductLineByBrand(
       {String? brandId}) async {
+    if (brandId == null) {
+      ApiHelper.logUnexpectedError('BrandId is null');
+      return null;
+    }
+
     final url = '${ApiUrls().PRODUCT_URL}/App/Product';
     final params = {
       'brandId': brandId,
@@ -246,9 +291,14 @@ class ApiServices {
           products.add(product);
         }
         return ProductBasicModel.fromList(products);
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return null;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Error Service: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return null;
   }
@@ -278,9 +328,14 @@ class ApiServices {
           products.add(product);
         }
         return ProductItemModel.fromList(products);
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return null;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Error Service: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return null;
   }
@@ -306,9 +361,14 @@ class ApiServices {
       final response = await api.get(url, queryParameters: params);
       if (response.statusCode == 200) {
         return response.data['meta']['total'];
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return 0;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Error Service: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return 0;
   }
@@ -325,9 +385,14 @@ class ApiServices {
           provinces.add(province);
         }
         return AddressModel.fromList(provinces);
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return null;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Province Error Service: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return null;
   }
@@ -338,10 +403,7 @@ class ApiServices {
   }) async {
     final url =
         '${ApiUrls().URL_8001}/App/AdministrativeDivision/Administrative';
-    final params = {
-      'provinceCode': provinceCode,
-      'districtCode': districtCode,
-    };
+    final params = {'provinceCode': provinceCode, 'districtCode': districtCode};
 
     try {
       final response = await api.get(url, queryParameters: params);
@@ -351,9 +413,14 @@ class ApiServices {
           districts.add(district);
         }
         return AddressModel.fromList(districts);
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return null;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Districts Error Service: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return null;
   }
@@ -377,9 +444,14 @@ class ApiServices {
           wards.add(ward);
         }
         return AddressModel.fromList(wards);
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return null;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Ward Error Service: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return null;
   }
@@ -396,9 +468,14 @@ class ApiServices {
             CustomerModel.fromJson(response.data['data']);
         storeUid(customerModel.id);
         return customerModel;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return null;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Customer Information Error Service: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return null;
   }
@@ -417,9 +494,14 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Change Password Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
@@ -436,9 +518,14 @@ class ApiServices {
       if (response.statusCode == 200) {
         if (isPrimary == true) storePhoneId(response.data['data']);
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Add Phone Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
@@ -466,9 +553,14 @@ class ApiServices {
       if (response.statusCode == 200) {
         if (isPrimary == true) storeAddressId(response.data['data']);
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('Add Phone Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
@@ -497,9 +589,14 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('changeAddress Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
@@ -519,9 +616,14 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('changePhone Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
@@ -551,9 +653,14 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('putProductToCart Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
@@ -576,9 +683,14 @@ class ApiServices {
           cartProducts.add(product.toJson());
         }
         return cartModel;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return null;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('getCurrentCart Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return null;
   }
@@ -592,9 +704,13 @@ class ApiServices {
         storeCurrentCartId(response.data['data']['id']);
         NotificationCenter().notify<int>('currentCartLength',
             data: response.data['data']['cartProducts'].length);
+      } else {
+        ApiHelper.handleNon200Response(response);
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('getAndStoreCurrentCartId Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
   }
 
@@ -607,9 +723,14 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('delProductToCart Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
@@ -618,7 +739,6 @@ class ApiServices {
     final url = '${ApiUrls().URL_8001}/App/Cart/Payment';
     String? addressId = await getAddressId();
     String? phoneId = await getPhoneId();
-    print(addressId);
     if (addressId.toString() == 'null' || phoneId.toString() == 'null') {
       return false;
     }
@@ -641,9 +761,14 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('getCurrentCart Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
@@ -662,11 +787,35 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('getCurrentCart Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
+  }
+
+  Future<ProductItemModel?> getProductItem({required String? id}) async {
+    final url = '${ApiUrls().PRODUCT_URL}/App/Cart/ProductItem/$id';
+    try {
+      final response = await api.get(url);
+
+      if (response.statusCode == 200) {
+        return ProductItemModel.fromJson(response.data['data']);
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return null;
+      }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
+    } catch (e) {
+      ApiHelper.logUnexpectedError(e);
+    }
+    return null;
   }
 
   Future<bool> checkSerialProductItem({required String? id}) async {
@@ -675,9 +824,14 @@ class ApiServices {
       final response = await api.post(url, data: {'data': id});
       if (response.statusCode == 200) {
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('checkSerialProductItem Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
@@ -685,13 +839,20 @@ class ApiServices {
   Future<bool> cancelCart({required String? id}) async {
     final url = '${ApiUrls().URL_8001}/App/Cart/$id';
     try {
-      final response = await api.put(url,
-          data: {'workflowStateId': '5744eeba-9457-4005-a5ec-a8d6354e74f8'});
+      final response = await api.put(
+        url,
+        data: {'workflowStateId': '5744eeba-9457-4005-a5ec-a8d6354e74f8'},
+      );
       if (response.statusCode == 200) {
         return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('cancelCart Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return false;
   }
@@ -706,10 +867,82 @@ class ApiServices {
           historyCarts.add(cart);
         }
         return OldCartModel.fromList(historyCarts);
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return null;
       }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
     } catch (e) {
-      print('getHistoryCart Service Error: $e');
+      ApiHelper.logUnexpectedError(e);
     }
     return null;
+  }
+
+  Future<bool> rating({
+    required int? ratingStar,
+    required String? productItemId,
+  }) async {
+    // check exception ratingStar or productItemId
+    if (ratingStar == null || productItemId == null) {
+      ApiHelper.logUnexpectedError("Rating star or product item ID is null");
+      return false;
+    }
+
+    if (ratingStar < 1 || ratingStar > 5) {
+      ApiHelper.logUnexpectedError("Rating star must be between 1 and 5");
+      return false;
+    }
+
+    final url = '${ApiUrls().PRODUCT_URL}/App/Rating';
+    String? userId = await getUid();
+    if (userId == null) {
+      ApiHelper.logUnexpectedError("User ID is null");
+      return false;
+    }
+    ProductItemModel? productItemModel =
+        await getProductItem(id: productItemId);
+    if (productItemModel == null) {
+      ApiHelper.logUnexpectedError("Product item model is null");
+      return false;
+    }
+
+    try {
+      final response = await api.post(url, data: {
+        "ratingStar": ratingStar,
+        "productItemId": productItemId,
+        "productItemCode": productItemModel.code.toString(),
+        "userId": userId
+      });
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        ApiHelper.handleNon200Response(response);
+        return false;
+      }
+    } on DioException catch (e) {
+      ApiHelper.handleDioException(e);
+    } catch (e) {
+      ApiHelper.logUnexpectedError(e);
+    }
+    return false;
+  }
+}
+
+class CurlLoggerDioInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    // Log the request as cURL command
+    handler.next(options);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    handler.next(response);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    handler.next(err);
   }
 }
