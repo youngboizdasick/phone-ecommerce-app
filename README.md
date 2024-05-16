@@ -6,7 +6,7 @@
 ## Get Started
 1. After cloning the code to your computer, open the terminal inside the project and enter `flutter pub get`. This command will automatically set up the packages used in the project.
 2. Select a simulator device.
-3. Press F5 to launch the application in debug mode.
+3. Press `F5` to launch the application in debug mode.
 
 ## Application Screens
 - **Login / Register**
