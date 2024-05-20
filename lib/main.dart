@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:phone_store_clean_architectutre/features/phone_store/views/screens/user/user_page.dart';
 import 'app_bloc_observer.dart';
 import 'config/themes/app_themes.dart';
 import 'features/phone_store/blocs/login/login_bloc.dart';
@@ -8,8 +7,11 @@ import 'features/phone_store/services/api_services.dart';
 import 'features/phone_store/views/screens/auth/signin_or_signup.dart';
 import 'features/phone_store/views/screens/cart/cart_page.dart';
 import 'features/phone_store/views/widgets/bottom_nav_bar/bottom_tab_bar.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   Bloc.observer = AppBlocObserver();
   runApp(const MyApp());
 }
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'SPhone',
         debugShowCheckedModeBanner: false,
-        home: _handleUserLoginOrNot(alreadyLoggedIn),
+        home: const SignInOrSignUp(),
         theme: theme(),
         routes: {
           '/HomePage': (context) => const BottomTabBar(),

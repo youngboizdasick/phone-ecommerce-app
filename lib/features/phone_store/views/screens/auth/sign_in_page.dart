@@ -3,6 +3,8 @@ import 'package:bootstrap_icons/bootstrap_icons.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:phone_store_clean_architectutre/features/phone_store/blocs/login/login_bloc.dart";
 import "package:phone_store_clean_architectutre/features/phone_store/services/api_services.dart";
+import "package:phone_store_clean_architectutre/features/phone_store/services/firebase_auth/auth_service.dart";
+import "package:phone_store_clean_architectutre/features/phone_store/views/screens/user/user_page.dart";
 import "package:phone_store_clean_architectutre/features/phone_store/views/widgets/bottom_nav_bar/bottom_tab_bar.dart";
 import "package:phone_store_clean_architectutre/features/phone_store/views/widgets/text_format/text_widget.dart";
 import "../../../../../../config/themes/app_pallete.dart";
@@ -19,8 +21,8 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController(text: 'test2@gmail.com');
+  final TextEditingController _passwordController = TextEditingController(text: '123');
   ApiServices auth = ApiServices();
 
   @override
@@ -61,6 +63,9 @@ class _SignInPageState extends State<SignInPage> {
               children: [
                 _buildLogoAndTitle(),
                 _buildAuthFieldAndButton(),
+                _buildOrUseOption(),
+                _buildLoginUsingOtherOption(),
+                const SizedBox(height: elementSpacing),
                 _buildRegistrationPrompt(),
               ],
             ),
@@ -124,38 +129,91 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   _buildRegistrationPrompt() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(right: elementSpacing),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              const Text(
-                'Chưa có tài khoản? ',
-                style: TextStyle(
-                  fontSize: defaultFontSize,
-                  fontWeight: FontWeight.normal,
-                  color: AppPallete.whiteColor,
-                ),
-              ),
-              GestureDetector(
-                onTap: widget.onTap,
-                child: const Text(
-                  'Đăng ký',
-                  style: TextStyle(
-                    fontSize: defaultFontSize,
-                    fontWeight: FontWeight.bold,
-                    color: AppPallete.btnColor,
-                    decoration: TextDecoration.underline,
-                    decorationColor: AppPallete.btnColor,
-                  ),
-                ),
-              ),
-            ],
+    return Padding(
+      padding: const EdgeInsets.only(right: elementSpacing),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Chưa có tài khoản? ',
+            style: TextStyle(
+              fontSize: defaultFontSize,
+              fontWeight: FontWeight.normal,
+              color: AppPallete.whiteColor,
+            ),
           ),
-        ),
+          GestureDetector(
+            onTap: widget.onTap,
+            child: const Text(
+              'Đăng ký',
+              style: TextStyle(
+                fontSize: defaultFontSize,
+                fontWeight: FontWeight.bold,
+                color: AppPallete.btnColor,
+                decoration: TextDecoration.underline,
+                decorationColor: AppPallete.btnColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _buildOrUseOption() {
+    return const Padding(
+      padding: EdgeInsets.only(
+        bottom: elementSpacing,
+        right: elementSpacing,
+        left: elementSpacing,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Divider(
+              color: AppPallete.whiteColor,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: elementSpacing),
+            child: TextWidget(
+              text: 'Hoặc sử dụng',
+              color: AppPallete.whiteColor,
+              isBold: true,
+            ),
+          ),
+          Expanded(
+            child: Divider(
+              color: AppPallete.whiteColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _buildLoginUsingOtherOption() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildOptionGoogleAccount(),
       ],
+    );
+  }
+
+  _buildOptionGoogleAccount() {
+    return GestureDetector(
+      onTap: () => _onLoginUsingGoogleAccount(),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppPallete.whiteColor,
+          borderRadius: BorderRadius.circular(radius),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(elementSpacing / 2),
+          child: Image.asset('./assets/google.png', height: 50),
+        ),
+      ),
     );
   }
 
@@ -166,5 +224,16 @@ class _SignInPageState extends State<SignInPage> {
             password: _passwordController.text.trim(),
           ),
         );
+  }
+
+  _onLoginUsingGoogleAccount() async {
+    if (await AuthService().signInWithGoogle() != null) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const UserPage(),
+          ),
+          (route) => false);
+    }
   }
 }

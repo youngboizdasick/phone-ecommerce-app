@@ -23,8 +23,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       final bool isLoggedIn = await ApiServices().loginUser(username, password);
 
-      print(isLoggedIn);
-
       if (isLoggedIn == false) {
         return emit(const LoginFailure('Tài khoản sai'));
       }
